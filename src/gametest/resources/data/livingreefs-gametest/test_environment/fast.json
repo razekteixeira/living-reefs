@@ -1,0 +1,8 @@
+{
+	"type": "minecraft:game_rules",
+	"rules": {
+		"minecraft:random_tick_speed": 1024,
+		"livingreefs:coral_growth": true,
+		"livingreefs:coral_bleaching": true
+	}
+}

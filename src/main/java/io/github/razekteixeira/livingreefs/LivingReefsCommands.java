@@ -121,8 +121,8 @@ public final class LivingReefsCommands {
 			lines.add(reasonLine(reason, conditions, settings));
 		}
 		int nearby = SpreadPlanner.nearbyCoral(new WorldReefView(level, pos, ReefSpecies.get()), 0, 0, 0);
-		lines.add(Component.literal("  %d coral within %d blocks; new coral needs fewer than %d around it".formatted(
-				nearby, SpreadPlanner.DENSITY_RADIUS, settings.maxNearbyCoral())).withStyle(ChatFormatting.GRAY));
+		lines.add(Component.literal("  %d coral nearby (spreading stops at %d)".formatted(nearby, settings.maxNearbyCoral()))
+				.withStyle(ChatFormatting.GRAY));
 		lines.add(outlook(level, assessment, settings));
 		return lines;
 	}
@@ -157,24 +157,30 @@ public final class LivingReefsCommands {
 		int speed = rules.get(GameRules.RANDOM_TICK_SPEED);
 		String text;
 		if (assessment.health() == Health.THRIVING) {
+			double seconds = expectedSeconds(speed, assessment.growthChance());
 			text = !rules.get(ReefGameRules.CORAL_GROWTH) ? "Growth is off (gamerule livingreefs:coral_growth)"
-					: "Tries to spread " + expected(speed, assessment.growthChance());
+					: seconds < 0 ? "Never spreads with the current random_tick_speed and growthChance"
+					: "Tries to spread about every " + duration(seconds) + " while players are near";
 		} else if (assessment.health() == Health.STRESSED) {
+			double seconds = expectedSeconds(speed, settings.bleachChance());
 			text = !rules.get(ReefGameRules.CORAL_BLEACHING) ? "Bleaching is off (gamerule livingreefs:coral_bleaching)"
-					: "Bleaches " + expected(speed, settings.bleachChance()) + " unless the cause goes away";
+					: seconds < 0 ? "Never bleaches with the current random_tick_speed and bleachChance"
+					: "Bleaches in about " + duration(seconds) + " if nothing changes";
 		} else {
 			text = "Stays as it is";
 		}
 		return Component.literal("  " + text).withStyle(ChatFormatting.ITALIC, ChatFormatting.GRAY);
 	}
 
-	/** Each block of a section is picked with chance speed/4096 per tick, then the action with {@code chance}. */
-	static String expected(int randomTickSpeed, double chance) {
+	/**
+	 * Mean seconds until an action with {@code chance} per random tick happens, or -1 for never. Each
+	 * block of a section is picked with chance speed/4096 per game tick.
+	 */
+	static double expectedSeconds(int randomTickSpeed, double chance) {
 		if (randomTickSpeed <= 0 || chance <= 0) {
-			return "never (random_tick_speed is " + randomTickSpeed + ")";
+			return -1;
 		}
-		double seconds = 4096.0 / (randomTickSpeed * chance) / 20.0;
-		return "about every " + duration(seconds) + " while players are near";
+		return 4096.0 / (randomTickSpeed * chance) / 20.0;
 	}
 
 	static String duration(double seconds) {

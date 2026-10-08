@@ -49,7 +49,7 @@ public final class ReefConditions {
 			}
 		}
 		int fish = level.getEntitiesOfClass(TropicalFish.class, new AABB(pos).inflate(FISH_RADIUS)).size();
-		return new Conditions(wet, waterKind(level.getBiome(pos)), light(level, pos), heat, conduitNear(level, pos), pickles, fish);
+		return new Conditions(wet, waterKind(level.getBiome(pos)), lightAt(level, pos), heat, conduitNear(level, pos), pickles, fish);
 	}
 
 	static WaterKind waterKind(Holder<Biome> biome) {
@@ -63,7 +63,7 @@ public final class ReefConditions {
 	 * The brightest sky or block light at the coral or in the water beside it. A coral block is
 	 * opaque, so its own position is always dark; the light that reaches its faces is what counts.
 	 */
-	static int light(ServerLevel level, BlockPos pos) {
+	public static int lightAt(ServerLevel level, BlockPos pos) {
 		int light = brightness(level, pos);
 		for (Direction direction : Direction.values()) {
 			light = Math.max(light, brightness(level, pos.relative(direction)));

@@ -93,7 +93,8 @@ publishMods {
 			: (project.version.contains("beta") || project.version.contains("rc")) ? BETA : STABLE
 	modLoaders.add("fabric")
 	changelog = releaseNotes.exists() ? releaseNotes.text : "See CHANGELOG.md"
-	dryRun = curseforgeToken.getOrNull() == null || curseforgeProject.isEmpty()
+	// An empty secret arrives as an empty string, not as a missing variable, so blank counts as missing.
+	dryRun = curseforgeToken.getOrElse("").isBlank() || curseforgeProject.isEmpty()
 
 	curseforge {
 		accessToken = curseforgeToken

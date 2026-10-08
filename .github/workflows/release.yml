@@ -49,19 +49,10 @@ jobs:
               --title "Living Reefs ${version}" --notes-file build/release-notes.md "${flags[@]}"
           fi
 
-      # The token is only exposed to the publish step, never to the build and tests.
-      - name: Check for the CurseForge token
-        id: token
+      # The token is only exposed to the publish step, never to the build and tests. Without the
+      # token or a curseforge_project_id in gradle.properties, build.gradle makes this a dry run:
+      # the upload is assembled under build/publishMods/ and nothing is sent.
+      - name: Publish to CurseForge (dry run without token or project id)
         env:
           CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
-        run: echo "present=$([ -n "$CURSEFORGE_TOKEN" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
-
-      - name: Publish to CurseForge
-        if: steps.token.outputs.present == 'true'
-        env:
-          CURSEFORGE_TOKEN: ${{ secrets.CURSEFORGE_TOKEN }}
-        run: |
-          if ! grep -qE '^curseforge_project_id=[0-9]+$' gradle.properties; then
-            echo "Set curseforge_project_id in gradle.properties before releasing"; exit 1
-          fi
-          ./gradlew publishCurseforge
+        run: ./gradlew publishCurseforge

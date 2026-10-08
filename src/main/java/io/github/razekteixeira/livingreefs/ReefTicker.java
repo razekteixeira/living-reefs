@@ -96,11 +96,9 @@ public final class ReefTicker {
 			return false;
 		}
 		BlockPos target = source.offset(p.dx(), p.dy(), p.dz());
-		BlockState old = level.getBlockState(target);
-		BlockState state = block.get().withPropertiesOf(old);
-		if (state.hasProperty(BlockStateProperties.WATERLOGGED) && old.getFluidState().isSource()) {
-			state = state.setValue(BlockStateProperties.WATERLOGGED, true);
-		}
+		// New coral replaces water and starts waterlogged (the default for coral plants and fans);
+		// revived coral keeps the waterlogging and facing of its dead twin.
+		BlockState state = block.get().withPropertiesOf(level.getBlockState(target));
 		if (p.facing() != null && state.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
 			state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, direction(p.facing()));
 		}

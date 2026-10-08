@@ -39,3 +39,37 @@ model; independence comes from fresh context (I2 Distinct run), recorded per gat
 | Gate | Status | Evidence |
 |---|---|---|
 | G0 Intake ready, G1 Spec/Design ready, G2 Plan ready | passed | `docs/spec.md` (outcome case, tags, effort L split into WorkItems, AC1 to AC15 with named tests, scope boundary). |
+| G3 Build green | passed | `./gradlew test runGameTest`: 41 JUnit tests and 12 server GameTests pass on a headless 26.3 server (2026-10-08). |
+| G4 Tests with teeth | passed | `python3 -P tools/mutation.py`: 25 planted mutants (15 in `core` and config, 10 in the Minecraft layer), each killed by its named test, none by a compile error; table below. Discrimination fix found while planting: the bleaching GameTest used the default `facing=north`, so a mutant dropping `facing` would have survived; the test now uses east. A redundant waterlogging branch in `ReefTicker.place` was removed instead of mutated (equivalent mutant). |
+| AC15 cost | measured | `tools/benchmark.sh`, 8,192 coral in a 64 x 64 warm-ocean reef, 40 s warm-up, 15 readings of the handler's own time: `random_tick_speed` 3: min 0.609, median 0.952, max 2.641 ms per second of game time (126 coral random ticks per second); 300: min 20.987, median 31.596, max 37.775 ms per second (11,982 per second). A first run gave identical readings at 300: the empty server had paused (`pause-when-empty-seconds`, default 60 s since 1.21.2); the benchmark now disables the pause and fails if the log shows one. |
+| F6 light calibration | done | Client capture "[reef survey]": 820 to 911 living coral around a natural warm ocean reef (seed `living-reefs`); light min 0, median 9, max 15; 33 to 34 below 1 (about 4 %); depth median 7, max 17. Default `minLight` 1 lets about 96 % of worldgen reef coral grow. |
+
+### G4 mutation table (2026-10-08)
+
+| Mutant | Planted fault | Killed by |
+|---|---|---|
+| M1 | species table keeps forms without a dead twin | `SpeciesTableTest.formsWithoutBothTwinsAreLeftOut` |
+| M2 | parser accepts `dead_dead_` ids | `SpeciesTableTest.parseRejectsMalformedIds` |
+| M3 | heat never stresses | `ReefRulesTest.heatStresses` (and 3 more) |
+| M4 | conduit never shelters | `ReefRulesTest.conduitMakesWaterReefAndProtects` |
+| M5 | light threshold off by one | `ReefRulesTest.darkCoralIsDormant` |
+| M6 | recovery band ignores the growth band | `ReefRulesTest.decideUsesTheRollBands` |
+| M7 | early-exit gate ignores bleaching | `ReefRulesTest.gateCoversEveryAction` |
+| M8 | water clearance one block short | `SpreadPlannerTest.respectsWaterClearance` |
+| M9 | density cap off by one | `SpreadPlannerTest.respectsDensityCap` |
+| M10 | reef height cap off by one | `SpreadPlannerTest.coralBlockHeightIsCapped` |
+| M11 | wall fan support on the wrong side | `SpreadPlannerTest.wallFanFacesAwayFromSupport` |
+| M12 | recovery revives other species | `SpreadPlannerTest.recoveryNeverTouchesDryOrOtherSpeciesOrLiving` |
+| M13 | recovery revives dry coral | `SpreadPlannerTest.recoveryNeverTouchesDryOrOtherSpeciesOrLiving` |
+| M14 | NaN chance kept | `SettingsTest.notANumberIsClampedNotKept` |
+| M15 | config loaded without clamping | `LivingReefsConfigTest.outOfRangeValuesAreClampedOnLoad` |
+| G1 | wall fans do not random tick | `livingCoralRandomTicksDeadDoesNot` |
+| G2 | mixin no longer calls the ticker | `randomTicksGrowAReef` |
+| G3 | bleaching drops the block state | `heatBleachesCoral` |
+| G4 | substrate tag ignored | `glassFloorStopsGrowth` (and `wallFansGrowOnEverySide`) |
+| G5 | heat sources never seen | `heatBleachesCoral` (and 2 more) |
+| G6 | conduit never seen | `conduitProtectsFromHeat` |
+| G7 | growth game rule ignored | `randomTicksGrowAReef` |
+| G8 | dead coral reported as living | `checkCommandExplainsHealth` |
+| G9 | wall fan facing never set | `wallFansGrowOnEverySide` |
+| G10 | west mapped to east | `wallFansGrowOnEverySide` |
