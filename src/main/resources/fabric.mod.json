@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "livingreefs",
+	"version": "${version}",
+	"name": "Living Reefs",
+	"description": "Coral reefs that live: coral spreads slowly to suitable neighbouring spots, thrives or bleaches with its conditions, and recovers. Server-side; vanilla clients can join.",
+	"authors": [
+		"razekteixeira"
+	],
+	"contact": {
+		"homepage": "https://razekteixeira.github.io/living-reefs/",
+		"sources": "https://github.com/razekteixeira/living-reefs",
+		"issues": "https://github.com/razekteixeira/living-reefs/issues"
+	},
+	"license": "Apache-2.0",
+	"icon": "assets/livingreefs/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"io.github.razekteixeira.livingreefs.LivingReefs"
+		]
+	},
+	"mixins": [
+		"livingreefs.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.19.5",
+		"minecraft": "~26.3",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
