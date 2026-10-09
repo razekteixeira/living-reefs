@@ -17,27 +17,29 @@ trap 'rm -rf "$frames"' EXIT
 for shot in gallery_reef gallery_restored gallery_night check check_stressed bleach_before bleach_after recovered; do
 	cp "$shots"/*_${shot}.png "$media/${shot//_/-}.png"
 done
+# The 3D logo for the site header, trimmed to its pixels.
+magick branding/logo3d.png -trim +repage -resize 600x600 "$media/logo3d.png"
 cp "$shots"/*_timelapse_000.png "$media/timelapse-first.png"
 cp "$(find "$shots" -name '*_timelapse_*.png' | sort | tail -1)" "$media/timelapse-last.png"
 
 # Time-lapse GIF: every frame, then a pause on the grown reef.
 i=0
-for f in $(find "$shots" -name '*_timelapse_*.png' | sort); do
+while IFS= read -r f; do
 	cp "$f" "$frames/$(printf '%03d' "$i").png"
 	i=$((i + 1))
-done
+done < <(find "$shots" -name '*_timelapse_*.png' | sort)
 last=$(printf '%03d' $((i - 1)))
-for extra in 1 2 3 4 5 6; do cp "$frames/$last.png" "$frames/$(printf '%03d' "$i").png"; i=$((i + 1)); done
+for _ in 1 2 3 4 5 6; do cp "$frames/$last.png" "$frames/$(printf '%03d' "$i").png"; i=$((i + 1)); done
 ffmpeg -loglevel error -y -framerate 6 -i "$frames/%03d.png" \
 	-vf "scale=800:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=160[p];[b][p]paletteuse=dither=bayer:bayer_scale=4" \
 	-loop 0 "$media/timelapse.gif"
 
 # Before and after, side by side, from the first and last time-lapse frames.
 label() {
-	magick "$1" -resize 960x -gravity northwest -fill 'rgba(4,14,24,0.72)' -draw 'rectangle 0,0 300,64' \
-		-font "$font" -pointsize 34 -fill white -annotate +22+12 "$2" "$3"
+	magick "$1" -resize 960x -gravity northwest -font "$font" -pointsize 34 -fill white \
+		-undercolor 'rgba(4,14,24,0.75)' -annotate +18+14 " $2 " "$3"
 }
-label "$media/timelapse-first.png" "Day 0: fragments" "$frames/before.png"
+label "$media/timelapse-first.png" "Start: five fragments" "$frames/before.png"
 label "$media/timelapse-last.png" "Later: a reef" "$frames/after.png"
 magick "$frames/before.png" "$frames/after.png" +append "$media/before-after.png"
 label "$media/bleach-after.png" "After a magma vent" "$frames/bleached.png"

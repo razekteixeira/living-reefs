@@ -233,7 +233,8 @@ reef conditions, species continuity, bleaching and recovery, on Fabric 26.3, ser
 - A live join test with an unmodified 26.3 client was not run; the vanilla client safety of custom
   game rules rests on code reading of the 26.3 client and Fabric's registry sync, plus Immortal
   Coral's precedent. The release checklist includes a manual join test.
-- Lithium compatibility rests on reading Lithium's development branch, not a run with Lithium.
+- Lithium compatibility rested on reading Lithium's development branch; it was confirmed afterwards
+  by a run with Lithium 0.26.2 during the build (`docs/sdlc-log.md`, F7).
 - The default light threshold needs calibration against real worldgen reef depths (done during the
   build, recorded in `docs/sdlc-log.md`).
 - Coral from other mods that does not extend the vanilla classes is not covered. A tag-driven scanner

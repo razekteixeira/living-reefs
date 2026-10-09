@@ -200,6 +200,7 @@ def main():
         ROOT / "branding/icon-512.png": 512,
         ROOT / "branding/icon-32.png": 32,
         ROOT / "site/favicon.png": 64,
+        ROOT / "site/apple-touch-icon.png": 192,
     }
     for path, size in outputs.items():
         path.parent.mkdir(parents=True, exist_ok=True)

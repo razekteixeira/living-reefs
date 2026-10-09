@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Living Reefs: coral reefs that grow, bleach and recover</title>
+<meta name="description" content="A Minecraft Fabric mod where coral reefs live: coral spreads its own kind, bleaches near heat or ice and recovers when conditions improve. Server-side, vanilla clients can join.">
+<meta name="theme-color" content="#061520">
+<link rel="canonical" href="https://razekteixeira.github.io/living-reefs/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Living Reefs">
+<meta property="og:description" content="Coral reefs that grow, bleach and recover on their own. Server-side Fabric mod for Minecraft 26.3.">
+<meta property="og:url" content="https://razekteixeira.github.io/living-reefs/">
+<meta property="og:image" content="https://razekteixeira.github.io/living-reefs/media/social.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="Living Reefs logo over a restored coral reef under water, with the tagline: coral reefs that grow, bleach and recover on their own.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Living Reefs">
+<meta name="twitter:description" content="Coral reefs that grow, bleach and recover on their own. Server-side Fabric mod for Minecraft 26.3.">
+<meta name="twitter:image" content="https://razekteixeira.github.io/living-reefs/media/social.png">
+<meta name="twitter:image:alt" content="Living Reefs logo over a restored coral reef under water.">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preload" as="image" type="image/webp" href="media/gallery-restored.webp" imagesrcset="media/gallery-restored-640.webp 640w, media/gallery-restored.webp 1280w" imagesizes="(max-width: 720px) 240vw, 100vw">
+<script>document.documentElement.classList.add('js')</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&family=Silkscreen&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="Living Reefs home">
+      <img src="favicon.png" width="32" height="32" alt="">
+      <span>Living Reefs</span>
+    </a>
+    <nav aria-label="Sections">
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#how">How it works</a></li>
+        <li><a href="#commands">Commands</a></li>
+        <li><a href="#owners">Server owners</a></li>
+        <li><a href="#install">Install</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+    </nav>
+    <a class="nav-gh" href="https://github.com/razekteixeira/living-reefs">GitHub</a>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- Hero: full-bleed underwater shot of the restored reef, copy + 3D logo left, real chat output right -->
+  <section class="hero" id="top">
+    <picture class="hero-bg" aria-hidden="true">
+      <source type="image/webp" srcset="media/gallery-restored-640.webp 640w, media/gallery-restored.webp 1280w" sizes="(max-width: 720px) 240vw, 100vw">
+      <img src="media/gallery-restored.png" width="1280" height="720" alt="" fetchpriority="high">
+    </picture>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <div class="hero-brand">
+          <picture>
+            <source type="image/webp" srcset="media/logo3d.webp">
+            <img class="logo3d" src="media/logo3d.png" width="600" height="600" alt="">
+          </picture>
+          <h1 class="pixel">Living Reefs</h1>
+        </div>
+        <p class="pitch">Coral reefs that grow, bleach and recover.</p>
+        <p class="sub">Coral spreads its own kind across the sea floor, turns white next to magma or in icy water, and comes back once the heat is gone. Restore a reef, farm one, or just watch it live.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="https://www.curseforge.com/minecraft/mc-mods/living-reefs">Get it on CurseForge</a>
+          <a class="btn btn-ghost" href="https://github.com/razekteixeira/living-reefs">Source on GitHub</a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <div class="chat" role="img" aria-label="Chat output of /reef check on a coral in the restored reef: thriving, in warm reef water with enough light, six tropical fish and two sea pickles nearby, and an estimate of how often it tries to spread.">
+          <!-- CHAT:check -->
+          <p class="l"><span class="c-aqua">Horn Coral Fan</span><span class="c-gray"> at -599 53 2644 is </span><span class="c-green b">thriving</span></p>
+          <p class="l"><span class="c-green">  ✔ </span><span class="c-gray">warm reef water</span></p>
+          <p class="l"><span class="c-green">  ✔ </span><span class="c-gray">light 15, needs 1</span></p>
+          <p class="l"><span class="c-aqua">  + </span><span class="c-gray">6 tropical fish nearby (x1.5)</span></p>
+          <p class="l"><span class="c-aqua">  + </span><span class="c-gray">2 sea pickles nearby (x1.5)</span></p>
+          <p class="l"><span class="c-gray">  17 coral within 2 blocks (crowded at 14)</span></p>
+          <p class="l"><span class="c-white-i">  Tries to spread about every 76 s while players are near</span></p>
+          <!-- /CHAT:check -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- The reef growing: time-lapse wide, then before/after and bleaching/recovery -->
+  <section class="captures" aria-labelledby="captures-title">
+    <div class="wrap">
+      <h2 class="pixel" id="captures-title">Watch it grow</h2>
+      <p class="lead">Five coral fragments planted on cleared sand next to a natural warm ocean reef. Every block that appears is the mod at work; the time-lapse is sped up with <code>random_tick_speed</code>.</p>
+      <div class="capture-grid">
+        <figure class="cap cap-wide">
+          <a class="shot" href="media/timelapse.gif" data-full="media/timelapse.gif" data-caption="A restoration site filling in: each coral seeds its own kind into nearby water."><picture><img src="media/timelapse.gif" width="800" height="450" loading="lazy" decoding="async" alt="Time-lapse under water: five coral blocks on bare sand grow fans, plants and new blocks of their own kind until the patch is a reef"></picture></a>
+          <figcaption>Each coral seeds its own kind into nearby still water: plants and fans on sand, wall fans on the side of a block, and new coral blocks up to a height cap.</figcaption>
+        </figure>
+        <figure class="cap">
+          <a class="shot" href="media/before-after.png" data-full="media/before-after.webp" data-caption="Start and end of the time-lapse."><picture><source type="image/webp" srcset="media/before-after-640.webp 640w, media/before-after.webp 1920w" sizes="(max-width: 720px) 100vw, 50vw"><img src="media/before-after.png" width="1920" height="540" loading="lazy" decoding="async" alt="Side by side: five coral fragments on bare sand, and the same spot later covered in coral"></picture></a>
+          <figcaption>From five fragments to a reef.</figcaption>
+        </figure>
+        <figure class="cap">
+          <a class="shot" href="media/bleach-recover.png" data-full="media/bleach-recover.webp" data-caption="A magma vent bleaches part of the reef; once it closes, living coral takes the dead coral back."><picture><source type="image/webp" srcset="media/bleach-recover-640.webp 640w, media/bleach-recover.webp 1920w" sizes="(max-width: 720px) 100vw, 50vw"><img src="media/bleach-recover.png" width="1920" height="540" loading="lazy" decoding="async" alt="Side by side: a grey bleached patch of the reef after a magma vent, and the same patch later with colour coming back"></picture></a>
+          <figcaption>Bleached by a magma vent, then recovering.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features bento -->
+  <section class="features" id="features" aria-labelledby="features-title">
+    <div class="wrap">
+      <h2 class="pixel" id="features-title">What a reef does</h2>
+      <div class="bento">
+        <article class="cell cell-grow graph">
+          <h3>Grows its own kind</h3>
+          <p>A thriving coral seeds the same species into still water within two blocks. Coral blocks build the reef up to three high; plants, fans and wall fans fill it in.</p>
+          <div class="health" aria-hidden="true">
+            <span class="h-thriving">thriving</span><span class="h-dormant">dormant</span><span class="h-stressed">stressed</span>
+          </div>
+        </article>
+
+        <article class="cell cell-server2 tint">
+          <h3>Server-side only</h3>
+          <p>Install it on the server. Players join with an unmodified client: no new blocks or items, just vanilla coral that lives.</p>
+        </article>
+
+        <article class="cell cell-bleach">
+          <h3>Bleaches under stress</h3>
+          <p>Magma or lava within two blocks, or frozen water, turns coral into its dead, white twin. Underwater magma vents leave pale scars in natural reefs.</p>
+        </article>
+
+        <article class="cell cell-recover">
+          <h3>Recovers when it is safe</h3>
+          <p>Remove the heat and thriving coral slowly takes back dead coral of its own kind right next to it. Dry dead coral, like decoration on land, is never touched.</p>
+        </article>
+
+        <article class="cell cell-helpers">
+          <h3>Things a reef likes</h3>
+          <dl class="helpers">
+            <div><dt>Tropical fish</dt><dd>Grazers nearby: growth x1.5.</dd></div>
+            <div><dt>Sea pickles</dt><dd>Light and company: growth x1.5, and light for deep reefs.</dd></div>
+            <div><dt>A conduit</dt><dd>Growth x2, makes any water a reef and shelters coral from bleaching.</dd></div>
+            <div><dt>Light</dt><dd>Sky or block light; water dims it one level per block.</dd></div>
+          </dl>
+        </article>
+
+        <article class="cell cell-caps">
+          <h3>Never overgrows</h3>
+          <p>No new coral where 14 are already within two blocks, none closer than two blocks to the surface, and it only ever fills still water.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery -->
+  <section class="gallery" id="gallery" aria-labelledby="gallery-title">
+    <div class="wrap">
+      <h2 class="pixel" id="gallery-title">Under water</h2>
+      <p class="lead">Real captures from the game client, taken by the mod's capture test. Natural reef, restored reef, and the restored reef at night.</p>
+      <div class="gal-grid">
+        <figure class="gal gal-main">
+          <a class="shot" href="media/gallery-reef.png" data-full="media/gallery-reef.webp" data-caption="A natural warm ocean reef, now alive."><picture><source type="image/webp" srcset="media/gallery-reef-640.webp 640w, media/gallery-reef.webp 1280w" sizes="(max-width: 720px) 100vw, 66vw"><img src="media/gallery-reef.png" width="1280" height="720" loading="lazy" decoding="async" alt="A natural warm ocean reef seen from under water: red, blue, yellow and purple coral with seagrass"></picture></a>
+          <figcaption>A natural reef as it generated, now alive.</figcaption>
+        </figure>
+        <figure class="gal">
+          <a class="shot" href="media/gallery-restored.png" data-full="media/gallery-restored.webp" data-caption="The restored reef up close."><picture><source type="image/webp" srcset="media/gallery-restored-640.webp 640w, media/gallery-restored.webp 1280w" sizes="(max-width: 720px) 100vw, 33vw"><img src="media/gallery-restored.png" width="1280" height="720" loading="lazy" decoding="async" alt="Low view across the restored reef, coral fans and blocks over sand"></picture></a>
+          <figcaption>The restored reef up close.</figcaption>
+        </figure>
+        <figure class="gal">
+          <a class="shot" href="media/gallery-night.png" data-full="media/gallery-night.webp" data-caption="At night the reef is lit by sea pickles."><picture><source type="image/webp" srcset="media/gallery-night-640.webp 640w, media/gallery-night.webp 1280w" sizes="(max-width: 720px) 100vw, 33vw"><img src="media/gallery-night.png" width="1280" height="720" loading="lazy" decoding="async" alt="The restored reef at night under deep blue water, lit by groups of sea pickles"></picture></a>
+          <figcaption>At night, lit by sea pickles.</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works: conditions to health, then the rules -->
+  <section class="counting" id="how" aria-labelledby="how-title">
+    <div class="wrap">
+      <h2 class="pixel" id="how-title">How it works</h2>
+      <p class="lead">Living coral gets random ticks, like grass and crops. Most ticks do nothing; now and then a coral looks around and acts on what it finds.</p>
+
+      <div class="flow" role="img" aria-label="Diagram: a coral reads its conditions, which decide its health. Thriving coral spreads or revives dead coral of its kind, dormant coral stays as it is, stressed coral bleaches.">
+        <div class="flow-boundary">
+          <span class="flow-tag">one coral, one random tick</span>
+          <div class="flow-row">
+            <div class="node">
+              <span class="node-name">Conditions</span>
+              <span class="node-item">reef water? light?<br>heat or ice? conduit?</span>
+            </div>
+            <div class="edge">
+              <span class="edge-line" aria-hidden="true"></span>
+              <span class="edge-note">decide <b>health</b></span>
+            </div>
+            <div class="node node-hot">
+              <span class="node-name">Health</span>
+              <span class="node-item"><span class="c-green">thriving</span> / dormant / <span class="c-red">stressed</span></span>
+            </div>
+            <div class="edge">
+              <span class="edge-line" aria-hidden="true"></span>
+              <span class="edge-note">one roll: <b>act</b></span>
+            </div>
+            <div class="node">
+              <span class="node-name">Action</span>
+              <span class="node-item">spread, revive,<br>bleach or nothing</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="rules">
+        <div class="rule">
+          <h3>Warm water and light</h3>
+          <p>Coral thrives in warm, lukewarm and deep lukewarm oceans (a biome tag), or near an active conduit, with light of at least 1. Elsewhere it simply stays as it is, so coral in your aquarium is safe.</p>
+        </div>
+        <div class="rule">
+          <h3>Only into still water, on real ground</h3>
+          <p>New coral only fills water source blocks, on sand, gravel, stone, clay or coral (a block tag). It never replaces a block, and it keeps two blocks of open water above it.</p>
+        </div>
+        <div class="rule">
+          <h3>Near players, at vanilla speed</h3>
+          <p>It runs on random ticks, so it only happens within simulation distance, follows <code>random_tick_speed</code> and stops under <code>/tick freeze</code>. At default speed a thriving coral tries to spread about every half hour.</p>
+        </div>
+        <div class="rule">
+          <h3>Nothing stored on the side</h3>
+          <p>The reef is the world: every change is a vanilla coral block. There is no extra save data to break, and removing the mod leaves your reefs exactly as they are.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Commands -->
+  <section class="commands" id="commands" aria-labelledby="commands-title">
+    <div class="wrap commands-grid">
+      <div class="commands-intro">
+        <h2 class="pixel" id="commands-title">Commands</h2>
+        <p><code>/livingreefs</code> and the short alias <code>/reef</code> do the same thing. Look at a coral and ask it how it is doing:</p>
+        <pre class="term"><code><span class="t-p">&gt;</span> /reef check
+<span class="t-p">&gt;</span> /reef check ~ ~-1 ~2
+<span class="t-p">&gt;</span> /reef stats</code></pre>
+        <p class="note">Checking and statistics are open to everyone. Reloading the config needs operator level 3 by default, or the matching node with a permissions mod.</p>
+      </div>
+
+      <div class="commands-table">
+        <table>
+          <caption class="sr">Living Reefs commands</caption>
+          <thead class="sr"><tr><th scope="col">Command</th><th scope="col">What it does</th></tr></thead>
+          <tbody>
+            <tr class="group"><th colspan="2" scope="colgroup">Look at a reef</th></tr>
+            <tr><td><code>check [pos]</code></td><td>Health of the coral you look at (or at <code>pos</code>), every condition behind it, and when it will next try to spread or bleach.</td></tr>
+            <tr><td><code>stats</code></td><td>Coral random ticks, growth, recovery and bleaching since the server started, and the handler's own time.</td></tr>
+          </tbody>
+          <tbody>
+            <tr class="group"><th colspan="2" scope="colgroup">Administer</th></tr>
+            <tr><td><code>reload</code></td><td>Reload <code>config/livingreefs.json</code> without a restart.</td></tr>
+            <tr><td><code>/gamerule livingreefs:coral_growth false</code></td><td>Stop spreading and recovery in this world.</td></tr>
+            <tr><td><code>/gamerule livingreefs:coral_bleaching false</code></td><td>Stop bleaching in this world.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Server owners -->
+  <section class="owners" id="owners" aria-labelledby="owners-title">
+    <div class="wrap">
+      <h2 class="pixel" id="owners-title">For server owners</h2>
+      <div class="owners-grid">
+        <div class="own own-perm">
+          <h3>Permissions and data</h3>
+          <p>With a permissions mod, these nodes decide. Without one, the default operator levels apply.</p>
+          <dl class="perm">
+            <div><dt><code>livingreefs.use</code></dt><dd><span class="lvl">0</span>check, stats</dd></div>
+            <div><dt><code>livingreefs.admin</code></dt><dd><span class="lvl">3</span>Reload the config</dd></div>
+          </dl>
+          <p>Datapack tags decide where reefs live: <code>livingreefs:reef_waters</code>, <code>frozen_waters</code> (biomes), <code>reef_substrate</code> and <code>reef_heat_sources</code> (blocks).</p>
+        </div>
+        <div class="own own-config">
+          <h3>Config</h3>
+          <p><code>config/livingreefs.json</code>, applied with <code>/reef reload</code>. Chances are per coral random tick.</p>
+<pre class="term json"><code>{
+  <span class="j-k">"growthChance"</span>: <span class="j-n">0.04</span>,
+  <span class="j-k">"recoveryChance"</span>: <span class="j-n">0.04</span>,
+  <span class="j-k">"bleachChance"</span>: <span class="j-n">0.25</span>,
+  <span class="j-k">"spreadRadius"</span>: <span class="j-n">2</span>,
+  <span class="j-k">"minWaterAbove"</span>: <span class="j-n">2</span>,
+  <span class="j-k">"maxNearbyCoral"</span>: <span class="j-n">14</span>,
+  <span class="j-k">"maxReefHeight"</span>: <span class="j-n">3</span>,
+  <span class="j-k">"minLight"</span>: <span class="j-n">1</span>,
+  <span class="j-k">"boosts"</span>: { <span class="j-k">"tropicalFish"</span>: <span class="j-n">1.5</span>,
+    <span class="j-k">"seaPickles"</span>: <span class="j-n">1.5</span>, <span class="j-k">"conduit"</span>: <span class="j-n">2.0</span> },
+  <span class="j-k">"particles"</span>: <span class="j-n">true</span>,
+  <span class="j-k">"permissionLevels"</span>: { <span class="j-k">"use"</span>: <span class="j-n">0</span>, <span class="j-k">"admin"</span>: <span class="j-n">3</span> }
+}</code></pre>
+        </div>
+        <div class="own own-perf">
+          <div class="stat">
+            <p class="stat-num">1.9 ms</p>
+            <p class="stat-label">per second of game time for a warm ocean reef of 8,192 coral at default speed (median, <code>tools/benchmark.sh</code>). That is about 0.1 ms per tick.</p>
+          </div>
+          <div class="safety">
+            <h3>Never loads chunks</h3>
+            <p>Every read goes through chunks that are already loaded, so a coral at the edge of the loaded area cannot pull new terrain in.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Install -->
+  <section class="install" id="install" aria-labelledby="install-title">
+    <div class="wrap">
+      <h2 class="pixel" id="install-title">Install</h2>
+      <p class="lead">Needs Minecraft 26.3, Fabric Loader 0.19.5 or newer, Fabric API and Java 25.</p>
+      <div class="install-grid">
+        <div class="install-col">
+          <h3>On a server</h3>
+          <ol class="steps">
+            <li><span>Set up a Fabric server for Minecraft 26.3.</span></li>
+            <li><span>Put the Living Reefs jar and Fabric API in the server's <code>mods/</code> folder.</span></li>
+            <li><span>Restart. Players join with a vanilla client, nothing to install on their side.</span></li>
+          </ol>
+        </div>
+        <div class="install-col">
+          <h3>In singleplayer</h3>
+          <ol class="steps">
+            <li><span>Install Fabric Loader for 26.3 with the Fabric installer.</span></li>
+            <li><span>Put the Living Reefs jar and Fabric API in <code>.minecraft/mods/</code>.</span></li>
+            <li><span>Start the Fabric profile and find a warm ocean.</span></li>
+          </ol>
+        </div>
+      </div>
+      <a class="btn btn-primary" href="https://www.curseforge.com/minecraft/mc-mods/living-reefs">Get it on CurseForge</a>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq" aria-labelledby="faq-title">
+    <div class="wrap faq-wrap">
+      <h2 class="pixel" id="faq-title">FAQ</h2>
+      <div class="qa">
+        <details>
+          <summary>Do players need to install anything?</summary>
+          <p>No. Living Reefs only changes vanilla coral blocks on the server, so vanilla 26.3 clients can join and see everything.</p>
+        </details>
+        <details>
+          <summary>Will it take over my ocean?</summary>
+          <p>No. Coral stops spreading where 14 coral are already within two blocks, keeps two blocks of water above it, builds coral blocks at most three high, and only grows in warm oceans or near a conduit. You can also switch growth off with <code>/gamerule livingreefs:coral_growth false</code>.</p>
+        </details>
+        <details>
+          <summary>Will my aquarium coral die?</summary>
+          <p>Not unless it sits next to magma or lava, or in a frozen biome. Outside warm oceans coral just stays as it is, unless you build a conduit nearby, which makes it grow.</p>
+        </details>
+        <details>
+          <summary>How do I restore a dead reef?</summary>
+          <p>Remove what bleached it (magma, lava), make sure there is light, then place a living coral of the same kind next to the dead coral. Thriving coral takes back dead coral of its own species right next to it. A conduit speeds everything up.</p>
+        </details>
+        <details>
+          <summary>Does it work with modded coral?</summary>
+          <p>Yes, when the mod's coral extends the vanilla coral blocks and is named like vanilla coral (<code>name_coral_block</code>, <code>dead_name_coral</code> and so on). Other mods' warm ocean biomes can be added to the <code>livingreefs:reef_waters</code> tag.</p>
+        </details>
+        <details>
+          <summary>Does it work with Lithium?</summary>
+          <p>Yes. Tested with Lithium 0.26.2: coral kept its random ticks at the expected rate and the reef grew. Mods that override the coral blocks' own random tick may take precedence.</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-grid">
+    <div class="foot-brand">
+      <img src="favicon.png" width="32" height="32" alt="">
+      <span class="pixel">Living Reefs</span>
+    </div>
+    <ul class="foot-links">
+      <li><a href="https://www.curseforge.com/minecraft/mc-mods/living-reefs">CurseForge</a></li>
+      <li><a href="https://github.com/razekteixeira/living-reefs">GitHub</a></li>
+      <li><a href="https://github.com/razekteixeira/living-reefs/issues">Report an issue</a></li>
+    </ul>
+    <p class="foot-legal">Released under the <a href="https://github.com/razekteixeira/living-reefs/blob/main/LICENSE">Apache License 2.0</a>.</p>
+    <p class="foot-disclaimer">NOT AN OFFICIAL MINECRAFT PRODUCT. NOT APPROVED BY OR ASSOCIATED WITH MOJANG OR MICROSOFT.</p>
+  </div>
+</footer>
+<dialog class="lb" id="lightbox" aria-label="Image viewer">
+  <figure class="lb-fig">
+    <img class="lb-img" src="" alt="">
+    <figcaption class="lb-cap"></figcaption>
+  </figure>
+  <button class="lb-btn lb-prev" type="button" aria-label="Previous image">&lsaquo;</button>
+  <button class="lb-btn lb-next" type="button" aria-label="Next image">&rsaquo;</button>
+  <button class="lb-btn lb-close" type="button" aria-label="Close" autofocus>&times;</button>
+</dialog>
+<script>
+(function () {
+  var dlg = document.getElementById('lightbox');
+  if (!dlg || typeof dlg.showModal !== 'function') return;
+  var shots = Array.prototype.slice.call(document.querySelectorAll('a.shot'));
+  var img = dlg.querySelector('.lb-img'), cap = dlg.querySelector('.lb-cap');
+  var index = 0, opener = null;
+  function show(i) {
+    index = (i + shots.length) % shots.length;
+    var a = shots[index], inner = a.querySelector('img');
+    img.src = a.getAttribute('data-full') || a.href;
+    img.alt = inner ? inner.alt : '';
+    cap.textContent = a.getAttribute('data-caption') || '';
+  }
+  shots.forEach(function (a, i) {
+    a.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+      e.preventDefault();
+      opener = a;
+      show(i);
+      dlg.showModal();
+    });
+  });
+  dlg.querySelector('.lb-prev').addEventListener('click', function () { show(index - 1); });
+  dlg.querySelector('.lb-next').addEventListener('click', function () { show(index + 1); });
+  dlg.querySelector('.lb-close').addEventListener('click', function () { dlg.close(); });
+  dlg.addEventListener('click', function (e) { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); show(index + 1); }
+  });
+  dlg.addEventListener('close', function () { img.removeAttribute('src'); if (opener) opener.focus(); });
+})();
+</script>
+</body>
+</html>

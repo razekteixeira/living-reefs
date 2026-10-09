@@ -14,6 +14,8 @@ if ! "$java_bin" -version 2>&1 | grep -q 'version "25'; then
 	exit 1
 fi
 mkdir -p run
+# A fresh flat world every time, so earlier runs never change the workload.
+rm -rf run/world
 export RCON_PASSWORD RCON_PORT=25576
 RCON_PASSWORD=$(python3 -c 'import secrets; print(secrets.token_hex(16))')
 echo "eula=true" > run/eula.txt
@@ -47,13 +49,23 @@ until grep -q "RCON running" "$log"; do
 done
 rcon() { python3 tools/rcon.py "$@"; }
 # The flat world's grass is at y -61; the reef sits on sand at -61 with water up to -50.
-rcon "forceload add 96 96 167 167" \
+# fill and fillbiome refuse more than max_block_modifications blocks (32,768 by default), so raise it
+# first, and stop if any setup command reports an error instead of measuring the wrong world.
+setup=$(rcon "gamerule minecraft:max_block_modifications 1000000" \
+	"forceload add 96 96 167 167" \
 	"fill 99 -61 99 164 -49 164 minecraft:glass hollow" \
 	"fill 100 -60 100 163 -50 163 minecraft:water" \
 	"fill 100 -61 100 163 -61 163 minecraft:sand" \
 	"fill 100 -60 100 163 -60 163 minecraft:tube_coral_block" \
 	"fill 100 -59 100 163 -59 163 minecraft:brain_coral_fan[waterlogged=true]" \
-	"fillbiome 99 -64 99 164 -40 164 minecraft:warm_ocean" > /dev/null
+	"fillbiome 99 -64 99 164 -40 164 minecraft:warm_ocean")
+if grep -qiE "too many|too large|error|unknown|incorrect|expected" <<< "$setup"; then
+	echo "Setting up the reef failed:" >&2
+	echo "$setup" >&2
+	exit 1
+fi
+check=$(rcon "reef check 120 -59 120")
+grep -q "warm reef water" <<< "$check" || { echo "The benchmark reef is not in reef water: $check" >&2; exit 1; }
 measure() {
 	local speed=$1
 	rcon "gamerule minecraft:random_tick_speed ${speed}" > /dev/null
