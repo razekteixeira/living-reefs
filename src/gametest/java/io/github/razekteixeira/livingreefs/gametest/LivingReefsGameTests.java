@@ -14,11 +14,14 @@ import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.permissions.LevelBasedPermissionSet;
+import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.Vec3;
 
 import net.fabricmc.fabric.api.gametest.v1.GameTest;
 
@@ -43,6 +46,8 @@ import io.github.razekteixeira.livingreefs.core.SpeciesTable;
 public class LivingReefsGameTests {
 	private static final String QUIET = "livingreefs-gametest:quiet";
 	private static final String FAST = "livingreefs-gametest:fast";
+	/** A second fast environment: each environment is its own batch, so the two fast tests never share game rules. */
+	private static final String FAST_RULES = "livingreefs-gametest:fast_rules";
 
 	private static final Settings.PermissionLevels LEVELS = Settings.PermissionLevels.DEFAULTS;
 	/** Always grows when thriving; light is not part of these tests (the test area's light is not controlled). */
@@ -162,6 +167,7 @@ public class LivingReefsGameTests {
 	// AC2 and AC8: real random ticks grow a reef; turning the game rules off stops all change.
 	@GameTest(environment = FAST, maxTicks = 600)
 	public void randomTicksGrowAReef(GameTestHelper helper) {
+		// Any earlier failure that left other settings behind is overwritten here, and restored at the end.
 		reefPool(helper, Blocks.SAND, 5);
 		BlockPos source = new BlockPos(3, 1, 3);
 		helper.setBlock(source, Blocks.BRAIN_CORAL_BLOCK);
@@ -317,6 +323,109 @@ public class LivingReefsGameTests {
 				.thenSucceed();
 	}
 
+	// AC8: the bleaching game rule alone stops bleaching on real random ticks, with growth still on.
+	@GameTest(environment = FAST_RULES, maxTicks = 600)
+	public void bleachingRuleSwitchesBleachingOff(GameTestHelper helper) {
+		reefPool(helper, Blocks.SAND, 5);
+		BlockPos coral = new BlockPos(3, 1, 3);
+		helper.setBlock(coral, Blocks.TUBE_CORAL_BLOCK);
+		helper.setBlock(new BlockPos(5, 1, 3), Blocks.MAGMA_BLOCK);
+		ServerLevel level = helper.getLevel();
+		Settings original = LivingReefsConfig.get();
+		LivingReefsConfig.set(new Settings(0, 0, 1, 2, 2, 14, 3, 0, Settings.Boosts.DEFAULTS, false, LEVELS));
+		level.getGameRules().set(ReefGameRules.CORAL_BLEACHING, false, level.getServer());
+		helper.startSequence()
+				// At speed 1024 a block gets about 5 random ticks a second, so 100 ticks is about 40 chances.
+				.thenIdle(100)
+				.thenExecute(() -> {
+					helper.assertBlockPresent(Blocks.TUBE_CORAL_BLOCK, coral);
+					level.getGameRules().set(ReefGameRules.CORAL_BLEACHING, true, level.getServer());
+				})
+				.thenWaitUntil(() -> helper.assertBlockPresent(Blocks.DEAD_TUBE_CORAL_BLOCK, coral))
+				.thenExecute(() -> LivingReefsConfig.set(original))
+				.thenSucceed();
+	}
+
+	// AC9: a closed, dark pool keeps coral dormant; a light beside it lets it thrive. A coral block is
+	// opaque, so this only works when the light of the water around it counts.
+	@GameTest(environment = QUIET, maxTicks = 200)
+	public void darkCoralWaitsForLight(GameTestHelper helper) {
+		reefPool(helper, Blocks.SAND, 5);
+		for (int x = 0; x <= 7; x++) {
+			for (int z = 0; z <= 7; z++) {
+				for (int y = 1; y <= 6; y++) {
+					if (y == 6 || x == 0 || x == 7 || z == 0 || z == 7) {
+						helper.setBlock(new BlockPos(x, y, z), Blocks.STONE);
+					}
+				}
+			}
+		}
+		BlockPos coral = new BlockPos(3, 1, 3);
+		helper.setBlock(coral, Blocks.TUBE_CORAL_BLOCK);
+		Settings growInDarkness = new Settings(1, 0, 0, 2, 2, 14, 3, 1, Settings.Boosts.DEFAULTS, false, LEVELS);
+		ServerLevel level = helper.getLevel();
+		BlockPos abs = helper.absolutePos(coral);
+		helper.startSequence()
+				.thenWaitUntil(() -> helper.assertValueEqual(assess(level, abs, growInDarkness).reasons().contains(ReefRules.Reason.TOO_DARK),
+						true, "too dark in the closed pool"))
+				.thenExecute(() -> {
+					helper.assertValueEqual(actRepeatedly(helper, coral, growInDarkness, 0, 100), 0, "growths in the dark");
+					helper.setBlock(new BlockPos(5, 3, 3), Blocks.GLOWSTONE);
+				})
+				.thenWaitUntil(() -> helper.assertValueEqual(assess(level, abs, growInDarkness).health(), Health.THRIVING, "health once lit"))
+				.thenExecute(() -> helper.assertTrue(actRepeatedly(helper, coral, growInDarkness, 0, 100) > 0, "growth once lit"))
+				.thenSucceed();
+	}
+
+	// AC6: a dead coral next to a heat source is not revived, or it would only bleach again.
+	@GameTest(environment = QUIET)
+	public void noRecoveryNextToHeat(GameTestHelper helper) {
+		reefPool(helper, Blocks.SAND, 6);
+		BlockPos source = new BlockPos(3, 1, 3);
+		BlockPos dead = new BlockPos(3, 2, 3);
+		helper.setBlock(source, Blocks.TUBE_CORAL_BLOCK);
+		helper.setBlock(dead, waterlogged(Blocks.DEAD_TUBE_CORAL_FAN));
+		// Two above the dead fan, three above the source: only the fan is near the heat.
+		helper.setBlock(new BlockPos(3, 4, 3), Blocks.MAGMA_BLOCK);
+		helper.assertValueEqual(assess(helper.getLevel(), helper.absolutePos(source), RECOVER).health(), Health.THRIVING, "source health");
+		helper.assertValueEqual(actRepeatedly(helper, source, RECOVER, 0, 400), 0, "revivals next to heat");
+		helper.assertBlockPresent(Blocks.DEAD_TUBE_CORAL_FAN, dead);
+		helper.succeed();
+	}
+
+	// S1: without admin rights, /reef check takes only positions near the player, so it cannot be used
+	// to find loaded chunks (and the players in them) far away.
+	@GameTest(environment = QUIET)
+	public void checkFarAwayNeedsAdmin(GameTestHelper helper) throws CommandSyntaxException {
+		reefPool(helper, Blocks.SAND, 5);
+		BlockPos coral = new BlockPos(3, 1, 3);
+		helper.setBlock(coral, Blocks.TUBE_CORAL_BLOCK);
+		BlockPos c = helper.absolutePos(coral);
+		MinecraftServer server = helper.getLevel().getServer();
+		CapturingSource capture = new CapturingSource();
+		CommandSourceStack player = server.createCommandSourceStack().withLevel(helper.getLevel()).withSource(capture)
+				.withPermission(LevelBasedPermissionSet.forLevel(PermissionLevel.ALL));
+		var dispatcher = server.getCommands().getDispatcher();
+		String command = "reef check %d %d %d".formatted(c.getX(), c.getY(), c.getZ());
+
+		dispatcher.execute(command, player.withPosition(Vec3.atCenterOf(c).add(0, 5, 0)));
+		helper.assertTrue(capture.take().contains("Tube Coral Block at"), "a nearby check works without admin");
+		try {
+			dispatcher.execute(command, player.withPosition(Vec3.atCenterOf(c).add(200, 0, 0)));
+			helper.fail("a far check without admin must fail");
+		} catch (CommandSyntaxException e) {
+			helper.assertTrue(e.getMessage().contains("Stand within"), e.getMessage());
+		}
+		dispatcher.execute(command, server.createCommandSourceStack().withLevel(helper.getLevel()).withSource(capture)
+				.withPosition(Vec3.atCenterOf(c).add(200, 0, 0)));
+		helper.assertTrue(capture.take().contains("Tube Coral Block at"), "an admin may check from far away");
+		helper.succeed();
+	}
+
+	private static ReefRules.Assessment assess(ServerLevel level, BlockPos pos, Settings settings) {
+		return ReefRules.assess(ReefConditions.read(level, pos, level.getBlockState(pos)), settings);
+	}
+
 	private static Health health(ServerLevel level, BlockPos pos) {
 		BlockState state = level.getBlockState(pos);
 		return ReefRules.assess(ReefConditions.read(level, pos, state), BLEACH).health();
@@ -325,6 +434,8 @@ public class LivingReefsGameTests {
 	// AC13: /reef check explains real coral: a stressed fan, a bleached one; /reef stats answers.
 	@GameTest(environment = QUIET)
 	public void checkCommandExplainsHealth(GameTestHelper helper) throws CommandSyntaxException {
+		// The report reads the global config; start from the defaults whatever an earlier test left.
+		LivingReefsConfig.set(Settings.DEFAULTS);
 		reefPool(helper, Blocks.SAND, 5);
 		BlockPos fan = new BlockPos(3, 1, 3);
 		BlockPos bleached = new BlockPos(2, 1, 5);

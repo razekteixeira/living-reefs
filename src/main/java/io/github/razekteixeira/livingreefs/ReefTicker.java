@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import io.github.razekteixeira.livingreefs.core.Action;
 import io.github.razekteixeira.livingreefs.core.Conditions;
@@ -76,17 +77,21 @@ public final class ReefTicker {
 		Action action = ReefRules.decide(assessment, settings, roll, growth, bleaching);
 		boolean changed = switch (action) {
 			case GROW -> place(level, pos, SpreadPlanner.grow(new WorldReefView(level, pos, species), species.table(), id, settings,
-					random::nextInt), settings);
+					random::nextInt), settings, false);
 			case RECOVER -> place(level, pos, SpreadPlanner.recover(new WorldReefView(level, pos, species), species.table(), id,
-					random::nextInt), settings);
+					random::nextInt), settings, true);
 			case BLEACH -> bleach(level, pos, state, species, settings);
 			case NONE -> false;
 		};
 		return changed ? action : Action.NONE;
 	}
 
-	/** Places a planned coral, or revives one, keeping the properties of what it replaces where they apply. */
-	private static boolean place(ServerLevel level, BlockPos source, Optional<Placement> planned, Settings settings) {
+	/**
+	 * Places a planned coral, or revives one, keeping the properties of what it replaces where they
+	 * apply. A revived coral next to a heat source would only bleach again, so it is left dead.
+	 */
+	private static boolean place(ServerLevel level, BlockPos source, Optional<Placement> planned, Settings settings,
+			boolean revive) {
 		if (planned.isEmpty()) {
 			return false;
 		}
@@ -103,6 +108,13 @@ public final class ReefTicker {
 			state = state.setValue(BlockStateProperties.HORIZONTAL_FACING, direction(p.facing()));
 		}
 		if (!state.canSurvive(level, target)) {
+			return false;
+		}
+		if (revive && ReefConditions.heatNear(level, target)) {
+			return false;
+		}
+		// A coral block is solid: never grow one into a swimming player or mob.
+		if (!revive && !level.isUnobstructed(state, target, CollisionContext.empty())) {
 			return false;
 		}
 		level.setBlock(target, state, Block.UPDATE_ALL);

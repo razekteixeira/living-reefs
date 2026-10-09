@@ -52,6 +52,22 @@ public final class ReefConditions {
 		return new Conditions(wet, waterKind(level.getBiome(pos)), lightAt(level, pos), heat, conduitNear(level, pos), pickles, fish);
 	}
 
+	/** Whether a heat source block is within {@link #NEAR} blocks, looking only at loaded chunks. */
+	static boolean heatNear(ServerLevel level, BlockPos pos) {
+		BlockPos.MutableBlockPos cursor = new BlockPos.MutableBlockPos();
+		for (int x = -NEAR; x <= NEAR; x++) {
+			for (int y = -NEAR; y <= NEAR; y++) {
+				for (int z = -NEAR; z <= NEAR; z++) {
+					BlockState near = WorldReefView.stateIfLoaded(level, cursor.setWithOffset(pos, x, y, z));
+					if (near != null && near.is(ReefTags.REEF_HEAT_SOURCES)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+
 	static WaterKind waterKind(Holder<Biome> biome) {
 		if (biome.is(ReefTags.FROZEN_WATERS)) {
 			return WaterKind.FROZEN;

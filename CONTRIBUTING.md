@@ -87,4 +87,9 @@ project ID) is in [`branding/curseforge-listing.md`](branding/curseforge-listing
 4. `./gradlew publishCurseforge` without a token is a dry run: it assembles the upload under
    `build/publishMods/` without sending anything.
 
+The CurseForge token can upload files to the project, so keep it out of reach of other workflows:
+the safest place is a `release` environment that only allows `v*` tags (and, if you like, needs
+your approval), with `environment: release` added to the release job. The build workflow never sees
+it, and the release workflow only hands it to the publish step.
+
 By contributing you agree that your contributions are licensed under the Apache License 2.0.

@@ -25,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gamerules.GameRules;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
 
 import me.lucko.fabric.api.permissions.v0.Permissions;
 
@@ -41,6 +42,10 @@ public final class LivingReefsCommands {
 			Component.literal("Look at a coral or give a position"));
 	private static final SimpleCommandExceptionType NOT_CORAL = new SimpleCommandExceptionType(
 			Component.literal("That block is not coral"));
+	/** Without admin rights a position must be this close, so the command cannot map loaded chunks far away. */
+	static final int CHECK_RANGE = 16;
+	private static final SimpleCommandExceptionType TOO_FAR = new SimpleCommandExceptionType(
+			Component.literal("Stand within " + CHECK_RANGE + " blocks of the coral to check it"));
 
 	private LivingReefsCommands() {
 	}
@@ -50,7 +55,7 @@ public final class LivingReefsCommands {
 				.then(literal("check")
 						.executes(c -> check(c, lookedAt(c)))
 						.then(argument("pos", BlockPosArgument.blockPos())
-								.executes(c -> check(c, BlockPosArgument.getLoadedBlockPos(c, "pos")))))
+								.executes(c -> check(c, nearbyPos(c)))))
 				.then(literal("stats").executes(LivingReefsCommands::stats))
 				.then(literal("reload").requires(LivingReefsCommands::canAdmin).executes(LivingReefsCommands::reload)));
 		dispatcher.register(literal("reef").requires(LivingReefsCommands::canUse).redirect(root));
@@ -80,6 +85,19 @@ public final class LivingReefsCommands {
 		throw NO_TARGET.create();
 	}
 
+	/**
+	 * The {@code pos} argument. Admins may check any loaded position; everyone else only one near
+	 * them, checked before the loaded test so far positions all give the same answer.
+	 */
+	private static BlockPos nearbyPos(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
+		CommandSourceStack source = c.getSource();
+		BlockPos pos = BlockPosArgument.getBlockPos(c, "pos");
+		if (!canAdmin(source) && !Vec3.atCenterOf(pos).closerThan(source.getPosition(), CHECK_RANGE)) {
+			throw TOO_FAR.create();
+		}
+		return BlockPosArgument.getLoadedBlockPos(c, "pos");
+	}
+
 	private static int check(CommandContext<CommandSourceStack> c, BlockPos pos) throws CommandSyntaxException {
 		ServerLevel level = c.getSource().getLevel();
 		BlockState state = level.getBlockState(pos);
@@ -103,7 +121,7 @@ public final class LivingReefsCommands {
 			boolean wet = WorldReefView.isWet(level, pos, state);
 			lines.add(head.append(Component.literal(" is bleached").withStyle(ChatFormatting.WHITE)));
 			lines.add(Component.literal(wet
-					? "  It recovers when a thriving coral of the same kind grows right next to it."
+					? "  It recovers when a thriving coral of the same kind is right next to it, away from heat."
 					: "  It is dry, so it stays dead.").withStyle(ChatFormatting.GRAY));
 			return lines;
 		}
@@ -120,10 +138,16 @@ public final class LivingReefsCommands {
 		for (ReefRules.Reason reason : assessment.reasons()) {
 			lines.add(reasonLine(reason, conditions, settings));
 		}
-		int nearby = SpreadPlanner.nearbyCoral(new WorldReefView(level, pos, ReefSpecies.get()), 0, 0, 0);
-		lines.add(Component.literal("  %d coral nearby (spreading stops at %d)".formatted(nearby, settings.maxNearbyCoral()))
-				.withStyle(ChatFormatting.GRAY));
-		lines.add(outlook(level, assessment, settings));
+		// The same test a growth attempt makes at each spot it can pick, including the density cap there.
+		// Only a thriving coral spreads, so only then does it matter where it could go.
+		int open = 0;
+		if (assessment.health() == Health.THRIVING) {
+			ReefSpecies species = ReefSpecies.get();
+			open = SpreadPlanner.openSpots(new WorldReefView(level, pos, species), species.table(), species.coralId(state.getBlock()), settings);
+			lines.add(Component.literal(open == 0 ? "  No room to spread nearby"
+					: "  %d open spot%s to spread to".formatted(open, open == 1 ? "" : "s")).withStyle(ChatFormatting.GRAY));
+		}
+		lines.add(outlook(level, assessment, settings, conditions.wet(), open));
 		return lines;
 	}
 
@@ -152,11 +176,15 @@ public final class LivingReefsCommands {
 	}
 
 	/** Expected time until the next growth attempt or bleaching, from the random tick speed and the chance. */
-	private static Component outlook(ServerLevel level, ReefRules.Assessment assessment, Settings settings) {
+	private static Component outlook(ServerLevel level, ReefRules.Assessment assessment, Settings settings, boolean wet, int open) {
 		GameRules rules = level.getGameRules();
 		int speed = rules.get(GameRules.RANDOM_TICK_SPEED);
 		String text;
-		if (assessment.health() == Health.THRIVING) {
+		if (!wet) {
+			text = "Out of water: it dies like any vanilla coral";
+		} else if (assessment.health() == Health.THRIVING && open == 0) {
+			text = "Waits for room to spread";
+		} else if (assessment.health() == Health.THRIVING) {
 			double seconds = expectedSeconds(speed, assessment.growthChance());
 			text = !rules.get(ReefGameRules.CORAL_GROWTH) ? "Growth is off (gamerule livingreefs:coral_growth)"
 					: seconds < 0 ? "Never spreads with the current random_tick_speed and growthChance"

@@ -80,7 +80,7 @@ Downloads are as of 2026-10-08. MR = Modrinth, CF = CurseForge.
 - [S17] Create: Aquatic Ambitions, CurseForge description (id 1005676), updated 2026-07-19, accessed 2026-10-08, tier 1.
 - [S18] Warm Coral Reef (id 1665385) and Tidal Terror (id 1726637), CurseForge descriptions, accessed 2026-10-08, tier 1.
 - [S19] Minecraft Feedback posts 360016594672, 360042487451 (comment 360004717692), 360044287512, 360011224491 and 360011085192, https://feedback.minecraft.net/hc/en-us/community/posts/<id>, dates unknown, accessed 2026-10-08 via search summaries only (direct fetch returned 403), tier 3. **Not verified.**
-- [S20] Local research note `/Users/razekteixeira/development/personal/minecraft/docs/research-top10-requested-mods.md` (row 4: "Living coral reefs that spread over time | r/feedthebeast 1woasop top comment (86 pts, Sep 2026)"), accessed 2026-10-08, tier 3 (secondhand; the primary source could not be reached).
+- [S20] Local research note (the owner's private notes, not published) (row 4: "Living coral reefs that spread over time | r/feedthebeast 1woasop top comment (86 pts, Sep 2026)"), accessed 2026-10-08, tier 3 (secondhand; the primary source could not be reached).
 - [S21] Modrinth project and search endpoints for name slugs (see Name check), accessed 2026-10-08, tier 1.
 - [S22] CurseForge search via proxy with the slug and searchFilter parameters (see Name check), accessed 2026-10-08, tier 1.
 - [S23] Upgrade Aquatic, Modrinth project API https://modrinth.com/mod/upgrade-aquatic, and CurseForge `upgrade-aquatic` (id 326895), updated 2026-09-16 (MR) / 2026-09-27 (CF), accessed 2026-10-08, tier 1.

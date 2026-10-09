@@ -74,3 +74,59 @@ model; independence comes from fresh context (I2 Distinct run), recorded per gat
 | G8 | dead coral reported as living | `checkCommandExplainsHealth` |
 | G9 | wall fan facing never set | `wallFansGrowOnEverySide` |
 | G10 | west mapped to east | `wallFansGrowOnEverySide` |
+
+G4 re-run after the G5 and G6 fixes (2026-10-09), `python3 -P tools/mutation.py`: 30 mutants, all
+killed by their named test (M11 re-run alone after its target text was narrowed). The harness now
+fails when only another test kills a mutant (G6 F15). New mutants:
+
+| Mutant | Planted fault | Killed by |
+|---|---|---|
+| M16 | open-spot count ignores water clearance and the density cap | `SpreadPlannerTest.openSpotsCountWhatGrowthCouldUse` |
+| G11 | bleaching game rule ignored in the ticker (G6 F4) | `bleachingRuleSwitchesBleachingOff` |
+| G12 | light read only at the coral itself (G6 F5) | `darkCoralWaitsForLight` |
+| G13 | dead coral next to heat revived (G6 F10) | `noRecoveryNextToHeat` |
+| G14 | `/reef check <pos>` range limit removed (G5 S1) | `checkFarAwayNeedsAdmin` |
+
+## WI-2 G5 Security clean and G6 Independent review (2026-10-09)
+
+The first session stopped while both reviews were running; they were started again in a fresh
+session. Both reviewers were fresh-context subagents (I2 Distinct run) and edited only their reports.
+
+| Gate | Status | Evidence |
+|---|---|---|
+| G5 Security clean | passed after fixes | `docs/security-g5.md`: clean with fixes, 0 CRITICAL, 0 HIGH, 1 MEDIUM, 12 LOW. Resolutions below. `shellcheck` and `actionlint` clean. |
+| G6 Independent review | passed after fixes | `docs/review-g6.md`: approve with changes, 0 CRITICAL, 0 HIGH, 6 MEDIUM, 14 LOW. Resolutions below. Visual check of real captures included. |
+| HumanDecision (spread extent, G6 F6) | decided | 2026-10-09, asked through the question prompt with "Warm ocean only (Recommended)", "Reword only" and "Add a distance rule". The owner answered **"Warm ocean only (Recommended)"**: `reef_waters` is warm ocean only and the docs say reefs creep slowly across warm ocean floor. Recorded in `docs/spec.md`. |
+
+| Finding | Severity | Resolution |
+|---|---|---|
+| S1 `/reef check <pos>` maps loaded chunks anywhere | MEDIUM | Without admin rights the position must be within 16 blocks, checked before the loaded test, so far positions all give the same answer. GameTest `checkFarAwayNeedsAdmin`, mutant G14. |
+| S2 checkout persists credentials | LOW | `persist-credentials: false` in build and release. |
+| S3 Loom snapshot | LOW | Pinned to 1.18.3; build and tests green. |
+| S4 no wrapper checksum | LOW | `distributionSha256Sum` from services.gradle.org added. |
+| S5 actions pinned by tag | LOW | Accepted (same as Throughput); Dependabot can be added later. |
+| S6 token environment | LOW | Release steps in CONTRIBUTING say to add `CURSEFORGE_TOKEN` to a protected `release` environment. |
+| S7 private vulnerability reporting off | LOW | Owner action: turn it on in the repository settings (listed in the handover). |
+| S8 conduit scan unbounded | LOW | Accepted with G6 F8: bounded to 9 loaded chunks and only on assessed ticks; noted as a known cost. |
+| S9 no claim protection | LOW | Documented in the README with the per-world game rule. |
+| S10 broken config at start uses default levels | LOW | Accepted: the defaults are level 0 for check and stats (read-only) and 3 for reload; documented. |
+| S11 absolute paths in research docs | LOW | Removed. |
+| S12, S13 dev password file, Google Fonts | LOW | Accepted. |
+| F1 chat text not from the capture run | MEDIUM | `branding/sync_chat.py` copies the run's `/reef check` output into the site and the CurseForge description; called by `make_media.sh`. |
+| F2 check shots taken with sped-up settings | MEDIUM | The capture restores the defaults before both check shots. |
+| F3 density line contradicts the outlook | MEDIUM | `/reef check` now reports the open spots a growth attempt could use (`SpreadPlanner.openSpots`, the same test as growth) and says when a coral has no room. |
+| F4 spec names missing tests; bleaching rule untested in the glue | MEDIUM | `bleachingRuleSwitchesBleachingOff` in its own fast environment, mutant G11; spec test names fixed. |
+| F5 `lightAt` untested | MEDIUM | `darkCoralWaitsForLight` (closed stone pool, then glowstone), mutant G12. |
+| F6 "never overgrows" overclaims | MEDIUM | Owner decision above; README, site, FAQ and CurseForge text reworded. |
+| F7 benchmark comment | LOW | Corrected: growth placement and block-entity-heavy chunks are not in the number. |
+| F8, F9 conduit scan cost, gate dominated by bleach chance | LOW | Accepted as known costs (bounded; about 10 % at defaults). |
+| F10 revive and re-bleach loop | LOW | Revival skips targets with heat within 2 blocks; `noRecoveryNextToHeat`, mutant G13. |
+| F11 `minWaterAbove` 0 | LOW | Clamped to 1..8. |
+| F12 coral block grown into an entity | LOW | Coral blocks need `isUnobstructed`; no dedicated test (review only). |
+| F13 dead coral wording, dry coral outlook | LOW | Reworded; dry coral reports "Out of water: it dies like any vanilla coral". |
+| F14 config left behind by a failed test | LOW | `checkCommandExplainsHealth` starts from the defaults; fast tests set their own. |
+| F15 incidental kills counted | LOW | Fixed in `tools/mutation.py`. |
+| F16 night shot looked like day | LOW | Default brightness for the shot; captions say "after dark"; no day-night claim. |
+| F17, F18 dead `Facing.opposite`, light Javadoc | LOW | Removed and fixed. |
+| F19 CurseForge categories | LOW | Main Server Utility; World Gen only as an additional category with an honest reason; Biomes dropped. |
+| F20 RCON client | LOW | Detects a failed login and reads exact lengths. |

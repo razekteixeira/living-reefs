@@ -114,7 +114,7 @@ public record Settings(
 				clamp("recoveryChance", recoveryChance, 0, 1, warnings),
 				clamp("bleachChance", bleachChance, 0, 1, warnings),
 				clamp("spreadRadius", spreadRadius, 1, 4, warnings),
-				clamp("minWaterAbove", minWaterAbove, 0, 8, warnings),
+				clamp("minWaterAbove", minWaterAbove, 1, 8, warnings),
 				clamp("maxNearbyCoral", maxNearbyCoral, 1, 124, warnings),
 				clamp("maxReefHeight", maxReefHeight, 1, 8, warnings),
 				clamp("minLight", minLight, 0, 15, warnings),

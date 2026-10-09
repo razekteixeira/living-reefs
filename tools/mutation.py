@@ -37,12 +37,13 @@ MUTANTS = [
      "ReefRulesTest.gateCoversEveryAction"),
     ("M8", CORE + "SpreadPlanner.java", "for (int k = 1; k <= blocks; k++) {", "for (int k = 1; k < blocks; k++) {", "test",
      "SpreadPlannerTest.respectsWaterClearance"),
-    ("M9", CORE + "SpreadPlanner.java", "|| nearbyCoral(view, dx, dy, dz) >= s.maxNearbyCoral()) {",
-     "|| nearbyCoral(view, dx, dy, dz) > s.maxNearbyCoral()) {", "test", "SpreadPlannerTest.respectsDensityCap"),
+    ("M9", CORE + "SpreadPlanner.java", "&& nearbyCoral(view, dx, dy, dz) < s.maxNearbyCoral();",
+     "&& nearbyCoral(view, dx, dy, dz) <= s.maxNearbyCoral();", "test", "SpreadPlannerTest.respectsDensityCap"),
     ("M10", CORE + "SpreadPlanner.java", "reefHeightBelow(view, table, dx, dy, dz) < s.maxReefHeight()) {",
      "reefHeightBelow(view, table, dx, dy, dz) <= s.maxReefHeight()) {", "test", "SpreadPlannerTest.coralBlockHeightIsCapped"),
-    ("M11", CORE + "SpreadPlanner.java", "if (view.cell(dx - facing.dx(), dy, dz - facing.dz()).substrate()) {",
-     "if (view.cell(dx + facing.dx(), dy, dz + facing.dz()).substrate()) {", "test", "SpreadPlannerTest.wallFanFacesAwayFromSupport"),
+    ("M11", CORE + "SpreadPlanner.java",
+     "// The fan points away from the block it hangs on.\n\t\t\tif (view.cell(dx - facing.dx(), dy, dz - facing.dz()).substrate()) {",
+     "// The fan points away from the block it hangs on.\n\t\t\tif (view.cell(dx + facing.dx(), dy, dz + facing.dz()).substrate()) {", "test", "SpreadPlannerTest.wallFanFacesAwayFromSupport"),
     ("M12", CORE + "SpreadPlanner.java", ".filter(e -> e.dead() && e.species().equals(source.get().species()))",
      ".filter(e -> e.dead())", "test", "SpreadPlannerTest.recoveryNeverTouchesDryOrOtherSpeciesOrLiving"),
     ("M13", CORE + "SpreadPlanner.java", "if (!target.isCoral() || !target.wet()) {", "if (!target.isCoral()) {", "test",
@@ -51,6 +52,9 @@ MUTANTS = [
      "double clamped = Math.max(min, Math.min(max, value));", "test", "SettingsTest.notANumberIsClampedNotKept"),
     ("M15", MAIN + "LivingReefsConfig.java", "current = checked.settings();", "current = parsed;", "test",
      "LivingReefsConfigTest.outOfRangeValuesAreClampedOnLoad"),
+    ("M16", CORE + "SpreadPlanner.java", "if ((dx != 0 || dy != 0 || dz != 0) && room(view, dx, dy, dz, s)",
+     "if ((dx != 0 || dy != 0 || dz != 0) && view.cell(dx, dy, dz).water()", "test",
+     "SpreadPlannerTest.openSpotsCountWhatGrowthCouldUse"),
     ("G1", MAIN + "LivingCoral.java", "|| block instanceof CoralFanBlock || block instanceof CoralWallFanBlock;",
      "|| block instanceof CoralFanBlock;", "runGameTest", "livingCoralRandomTicksDeadDoesNot"),
     ("G2", MAIN + "mixin/BlockBehaviourMixin.java", "ReefTicker.onRandomTick(state, level, pos, random);", "", "runGameTest",
@@ -70,6 +74,15 @@ MUTANTS = [
      "if (false) {", "runGameTest", "wallFansGrowOnEverySide"),
     ("G10", MAIN + "ReefTicker.java", "case WEST -> Direction.WEST;", "case WEST -> Direction.EAST;", "runGameTest",
      "wallFansGrowOnEverySide"),
+    ("G11", MAIN + "ReefTicker.java", "boolean bleaching = rules.get(ReefGameRules.CORAL_BLEACHING);", "boolean bleaching = true;",
+     "runGameTest", "bleachingRuleSwitchesBleachingOff"),
+    ("G12", MAIN + "ReefConditions.java", "light = Math.max(light, brightness(level, pos.relative(direction)));",
+     "light = Math.max(light, brightness(level, pos));", "runGameTest", "darkCoralWaitsForLight"),
+    ("G13", MAIN + "ReefTicker.java", "if (revive && ReefConditions.heatNear(level, target)) {", "if (false) {", "runGameTest",
+     "noRecoveryNextToHeat"),
+    ("G14", MAIN + "LivingReefsCommands.java",
+     "if (!canAdmin(source) && !Vec3.atCenterOf(pos).closerThan(source.getPosition(), CHECK_RANGE)) {", "if (false) {",
+     "runGameTest", "checkFarAwayNeedsAdmin"),
 ]
 
 
@@ -133,7 +146,8 @@ def main():
     (ROOT / "build").mkdir(exist_ok=True)
     (ROOT / "build/mutation-report.md").write_text(report + "\n")
     print(report)
-    if any(not result.startswith("KILLED") for _, _, result, _ in rows):
+    # Only a kill by the named test counts: an incidental kill by another test leaves the gate open.
+    if any(result != "KILLED" for _, _, result, _ in rows):
         sys.exit(1)
 
 

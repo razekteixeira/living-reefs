@@ -32,8 +32,7 @@ public final class SpreadPlanner {
 		if (dx == 0 && dy == 0 && dz == 0) {
 			return Optional.empty();
 		}
-		if (!view.cell(dx, dy, dz).water() || !clearAbove(view, dx, dy, dz, s.minWaterAbove())
-				|| nearbyCoral(view, dx, dy, dz) >= s.maxNearbyCoral()) {
+		if (!room(view, dx, dy, dz, s)) {
 			return Optional.empty();
 		}
 		String species = source.get().species();
@@ -88,6 +87,47 @@ public final class SpreadPlanner {
 				.filter(e -> e.dead() && e.species().equals(source.get().species()))
 				.flatMap(e -> table.id(e.species(), e.form(), false))
 				.map(id -> new Placement(dx, dy, dz, id, null));
+	}
+
+	/**
+	 * How many of the spots a growth attempt from {@code sourceId} can pick would take new coral now:
+	 * still water with room above, under the density cap, on substrate or beside a block a wall fan
+	 * can hang on. Zero means the coral has no room to spread until its surroundings change.
+	 */
+	public static int openSpots(ReefView view, SpeciesTable table, String sourceId, Settings s) {
+		Optional<SpeciesTable.Entry> source = table.lookup(sourceId).filter(e -> !e.dead());
+		if (source.isEmpty()) {
+			return 0;
+		}
+		boolean wallFans = table.id(source.get().species(), CoralForm.WALL_FAN, false).isPresent();
+		int r = s.spreadRadius();
+		int open = 0;
+		for (int dx = -r; dx <= r; dx++) {
+			for (int dy = -1; dy <= 1; dy++) {
+				for (int dz = -r; dz <= r; dz++) {
+					if ((dx != 0 || dy != 0 || dz != 0) && room(view, dx, dy, dz, s)
+							&& (view.cell(dx, dy - 1, dz).substrate() || wallFans && besideSubstrate(view, dx, dy, dz))) {
+						open++;
+					}
+				}
+			}
+		}
+		return open;
+	}
+
+	/** Still water with enough water above and fewer coral around it than the density cap. */
+	static boolean room(ReefView view, int dx, int dy, int dz, Settings s) {
+		return view.cell(dx, dy, dz).water() && clearAbove(view, dx, dy, dz, s.minWaterAbove())
+				&& nearbyCoral(view, dx, dy, dz) < s.maxNearbyCoral();
+	}
+
+	private static boolean besideSubstrate(ReefView view, int dx, int dy, int dz) {
+		for (Facing facing : Facing.values()) {
+			if (view.cell(dx - facing.dx(), dy, dz - facing.dz()).substrate()) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	static boolean clearAbove(ReefView view, int dx, int dy, int dz, int blocks) {

@@ -5,7 +5,7 @@
 - Verifier: R3 Claim Verification, fresh context, did not write the report. Gate: G4 Claims with teeth.
 - Method: factored verification. Only the `## Sources` sections of evidence packs A to D were read to
   resolve citation keys; the packs' claims and reasoning were not read. Code and data claims were
-  checked against the decompiled 26.3 sources (`/Users/razekteixeira/.claude/jobs/f8f56cc0/tmp/mcsrc`)
+  checked against the decompiled 26.3 sources (decompiled with Loom's `genSources` into a local scratch folder)
   and the bundled `data/` of `minecraft-common-deobf-26.3.jar`. Web claims were re-fetched: Modrinth API,
   CurseForge via the curse.tools proxy (`/v1/cf/...`), Spiget API (SpigotMC mirror API), raw GitHub
   (FabricMC/fabric 26.3, NeoForge 26.3.x, Upgrade Aquatic 1.21.1, Lithium develop), Minecraft Wiki

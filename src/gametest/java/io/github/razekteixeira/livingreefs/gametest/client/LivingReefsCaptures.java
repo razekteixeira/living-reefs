@@ -2,7 +2,9 @@ package io.github.razekteixeira.livingreefs.gametest.client;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.datafixers.util.Pair;
@@ -10,12 +12,14 @@ import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.gui.screens.worldselection.WorldCreationUiState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.animal.fish.TropicalFish;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 
 import net.fabricmc.fabric.api.client.gametest.v1.FabricClientGameTest;
@@ -24,6 +28,7 @@ import net.fabricmc.fabric.api.client.gametest.v1.context.TestServerContext;
 import net.fabricmc.fabric.api.client.gametest.v1.context.TestSingleplayerContext;
 
 import io.github.razekteixeira.livingreefs.LivingReefs;
+import io.github.razekteixeira.livingreefs.LivingReefsCommands;
 import io.github.razekteixeira.livingreefs.LivingReefsConfig;
 import io.github.razekteixeira.livingreefs.ReefConditions;
 import io.github.razekteixeira.livingreefs.ReefSpecies;
@@ -39,7 +44,8 @@ import io.github.razekteixeira.livingreefs.core.Settings;
  * how the default {@code minLight} was calibrated.
  *
  * <p>Run with {@code ./gradlew runClientGameTest}; screenshots land in {@code build/run/clientGameTest/screenshots}.
- * Growth is sped up with {@code random_tick_speed} and higher chances for the time-lapse only; every
+ * Growth is sped up with {@code random_tick_speed} and higher chances for the time-lapse, bleaching and
+ * recovery only (the {@code /reef check} shots use the defaults); every
  * coral change is the mod's own. Placed by hand: the cleared site, five starting fragments, sea
  * pickles, still tropical fish and the magma vent.
  */
@@ -102,10 +108,16 @@ public class LivingReefsCaptures implements FabricClientGameTest {
 			server.runCommand("gamerule random_tick_speed 3");
 			showHud(context);
 			server.runOnServer(s -> fish(s, site));
+			// The chat shots show what a player would see: default settings and random tick speed.
+			server.runOnServer(s -> LivingReefsConfig.set(original));
 
 			// /reef check on a thriving coral next to sea pickles, with tropical fish around.
-			BlockPos thriving = server.computeOnServer(s -> nearestCoral(s, site.offset(0, 1, 0)));
+			BlockPos thriving = server.computeOnServer(s -> growingCoral(s, site.offset(0, 1, 0)));
 			teleport(context, world, server, thriving.offset(0, 1, -3), thriving);
+			// A fish right in front of the camera would cover the chat; the ones further away stay.
+			BlockPos eye = thriving.offset(0, 1, -3);
+			server.runCommand("kill @e[type=minecraft:tropical_fish,x=%d,y=%d,z=%d,distance=..3]".formatted(eye.getX(), eye.getY(), eye.getZ()));
+			context.waitTicks(10);
 			clearChat(context);
 			typeCommand(context, world, "reef check");
 			context.takeScreenshot("check");
@@ -126,6 +138,8 @@ public class LivingReefsCaptures implements FabricClientGameTest {
 			context.takeScreenshot("check_stressed");
 			server.runCommand("reef check %d %d %d".formatted(stressed.getX(), stressed.getY(), stressed.getZ()));
 			clearChat(context);
+			server.runOnServer(s -> LivingReefsConfig.set(new Settings(0.4, 0.05, 0.6, 2, 2, 14, 3, 1, Settings.Boosts.DEFAULTS, true,
+					Settings.PermissionLevels.DEFAULTS)));
 			server.runCommand("gamerule random_tick_speed 256");
 			context.waitTicks(300);
 			server.runCommand("gamerule random_tick_speed 3");
@@ -142,14 +156,15 @@ public class LivingReefsCaptures implements FabricClientGameTest {
 			server.runCommand("gamerule random_tick_speed 3");
 			cinematic(context, world, server, ventEye, ventView, 6000, "recovered");
 
-			// Gallery: the restored reef up close, and at night lit by sea pickles.
+			// Gallery: the restored reef up close, and after dark lit by sea pickles.
 			server.runOnServer(s -> LivingReefsConfig.set(original));
 			cinematic(context, world, server, under(site.offset(-6, 2, -7)), site.offset(0, 1, 0), 6000, "gallery_restored");
 			server.runOnServer(s -> pickles(s, site));
 			// Conduit power sees in the dark under water just like night vision, so both go for the night shot.
 			server.runCommand("effect clear @p night_vision");
 			server.runCommand("effect clear @p conduit_power");
-			context.runOnClient(client -> client.options.gamma().set(1.0));
+			// Default brightness: full brightness made the night shot look like day.
+			context.runOnClient(client -> client.options.gamma().set(0.5));
 			cinematic(context, world, server, under(site.offset(5, 3, -8)), site.offset(0, 1, 0), 18000, "gallery_night");
 		}
 	}
@@ -303,6 +318,25 @@ public class LivingReefsCaptures implements FabricClientGameTest {
 						.setValue(net.minecraft.world.level.block.SeaPickleBlock.PICKLES, 4));
 			}
 		}
+	}
+
+	/**
+	 * The thriving coral nearest to {@code around} that still has room to spread, found with the
+	 * report {@code /reef check} prints, so the check shot shows a coral that is still growing.
+	 */
+	private static BlockPos growingCoral(MinecraftServer server, BlockPos around) {
+		ServerLevel level = server.overworld();
+		ReefSpecies species = ReefSpecies.get();
+		return coralNear(level, around, 8).stream()
+				.sorted(Comparator.comparingDouble(pos -> pos.distSqr(around)))
+				.filter(pos -> {
+					BlockState state = level.getBlockState(pos);
+					return species.entry(state.getBlock()).map(entry -> LivingReefsCommands.report(level, pos, state, entry).stream()
+							.map(Component::getString).collect(Collectors.joining("\n"))).filter(text -> text.contains(" is thriving")
+							&& text.contains(" to spread to")).isPresent();
+				})
+				.findFirst()
+				.orElseThrow(() -> new AssertionError("no thriving coral with room to spread near " + around));
 	}
 
 	private static BlockPos nearestCoral(MinecraftServer server, BlockPos around) {

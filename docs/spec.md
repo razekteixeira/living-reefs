@@ -86,7 +86,7 @@ prefix). Built from the block registry when the server starts.
 |---|---|---|
 | Game rule | `livingreefs:coral_growth` (boolean) | true: growth and recovery |
 | Game rule | `livingreefs:coral_bleaching` (boolean) | true |
-| Biome tag | `livingreefs:reef_waters` | warm, lukewarm, deep lukewarm ocean |
+| Biome tag | `livingreefs:reef_waters` | warm ocean (lukewarm removed at G6, see the spread decision below) |
 | Biome tag | `livingreefs:frozen_waters` | frozen ocean, deep frozen ocean, frozen river |
 | Block tag | `livingreefs:reef_substrate` | sand, red sand, gravel, clay, stone family, all coral blocks |
 | Block tag | `livingreefs:reef_heat_sources` | magma block, lava |
@@ -96,6 +96,12 @@ prefix). Built from the block registry when the server starts.
 or at `pos`, with each condition and the expected time to the next growth), `stats` (use: counts
 since start and the handler's own time), `reload` (admin). Permission nodes `livingreefs.use` and
 `livingreefs.admin`; without a permissions mod the configured vanilla levels apply (0 and 3).
+
+**Spread decision (G6, owner, 2026-10-09).** The caps bound density, not extent: every new coral is
+a source, so a thriving reef keeps creeping across the floor near players. The owner chose to limit
+spreading to warm ocean (the one biome where vanilla generates reefs) by narrowing the
+`reef_waters` tag, and to say plainly in the docs that reefs creep slowly across warm ocean floor.
+Lukewarm water is neutral: coral lives there but does not spread. Servers can widen or narrow the tag.
 
 **No saved data.** Everything the mod needs is in the world's blocks; statistics are kept in memory
 since server start. This removes the saved-data risk class entirely.
@@ -112,16 +118,16 @@ Each criterion has a discriminating test: it fails if the behaviour is removed o
 | AC1 | Living coral of every form random ticks; dead coral does not | `LivingReefsGameTests#livingCoralRandomTicksDeadDoesNot` |
 | AC2 | Real random ticks grow a reef: with growth forced and a high tick speed, new coral appears in reef water | `LivingReefsGameTests#randomTicksGrowAReef` |
 | AC3 | Growth keeps the species and only fills still water on substrate | `LivingReefsGameTests#growthKeepsSpeciesAndFillsOnlyWater`, `SpreadPlannerTest#*` |
-| AC4 | Caps: no growth with too little water above, on non-substrate, or past the density cap | `LivingReefsGameTests#capsStopGrowth`, `SpreadPlannerTest#respectsWaterClearance`, `#respectsDensityCap`, `#rejectsNonSubstrate`, `#coralBlockHeightIsCapped` |
+| AC4 | Caps: no growth with too little water above, on non-substrate, or past the density cap | `LivingReefsGameTests#shallowWaterStopsGrowth`, `#glassFloorStopsGrowth`, `SpreadPlannerTest#respectsWaterClearance`, `#respectsDensityCap`, `#rejectsNonSubstrate`, `#coralBlockHeightIsCapped` |
 | AC5 | Heat bleaches coral into its dead twin, keeping facing and waterlogging | `LivingReefsGameTests#heatBleachesCoral`, `ReefRulesTest#heatStresses` |
-| AC6 | Thriving coral revives wet dead coral of its species; never dry dead coral or another species | `LivingReefsGameTests#recoveryRevivesWetDeadCoralOnly` |
+| AC6 | Thriving coral revives wet dead coral of its species; never dry dead coral, another species, or coral next to heat | `LivingReefsGameTests#recoveryRevivesWetDeadCoralOnly`, `#noRecoveryNextToHeat` |
 | AC7 | Outside reef water and away from a conduit, coral is dormant; a conduit makes it thrive and protects it | `ReefRulesTest#dormantOutsideReefWaters`, `#conduitMakesWaterReefAndProtects`, `LivingReefsGameTests#conduitProtectsFromHeat` |
-| AC8 | Turning off the game rules stops growth and bleaching | `LivingReefsGameTests#gameRulesSwitchBehaviourOff` |
-| AC9 | Darkness stops growth without bleaching | `ReefRulesTest#darkCoralIsDormant` |
+| AC8 | Turning off the game rules stops growth and bleaching | `LivingReefsGameTests#randomTicksGrowAReef` (both rules off), `#bleachingRuleSwitchesBleachingOff` (bleaching rule alone) |
+| AC9 | Darkness stops growth without bleaching; the light of the water around a coral counts | `ReefRulesTest#darkCoralIsDormant`, `LivingReefsGameTests#darkCoralWaitsForLight` |
 | AC10 | Boosts raise the growth chance (fish, pickles, conduit) | `ReefRulesTest#boostsMultiplyGrowthChance` |
 | AC11 | Species pairing works for vanilla and same-pattern modded ids, and ignores incomplete families | `SpeciesTableTest#*` |
 | AC12 | Config: missing file writes every default, partial file keeps defaults, out-of-range values clamp with warnings, a broken file is left untouched and the previous settings stay | `SettingsTest#*`, `LivingReefsConfigTest#*` |
-| AC13 | `/reef check` explains the health of real coral | `LivingReefsGameTests#checkCommandExplainsHealth` |
+| AC13 | `/reef check` explains the health of real coral; without admin rights only near the player | `LivingReefsGameTests#checkCommandExplainsHealth`, `#checkFarAwayNeedsAdmin`, `SpreadPlannerTest#openSpotsCountWhatGrowthCouldUse` |
 | AC14 | A vanilla client can join (no registry or packet changes besides game rules) | Code review at G6 plus manual join in the release checklist (`CONTRIBUTING.md`) |
 | AC15 | The handler costs little: measured median time per coral random tick and per second on a dense reef | `tools/benchmark.sh` output recorded in `docs/sdlc-log.md` |
 

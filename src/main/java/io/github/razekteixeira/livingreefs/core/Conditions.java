@@ -5,7 +5,7 @@ package io.github.razekteixeira.livingreefs.core;
  *
  * @param wet           waterlogged or touching water (dry coral is left to vanilla, which kills it)
  * @param water         the biome's water kind
- * @param light         the brighter of sky and block light at the coral
+ * @param light         the brightest sky or block light at the coral or its six neighbours
  * @param heatNearby    a heat source block (magma, lava) within 2 blocks
  * @param conduitNearby an active conduit within 16 blocks
  * @param seaPickles    lit sea pickle blocks within 2 blocks

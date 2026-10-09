@@ -31,7 +31,7 @@ client.
 
 | `/reef check` on a thriving coral | `/reef check` next to a magma vent |
 |---|---|
-| ![Reef check in chat: thriving, warm reef water, light, fish and sea pickles](site/media/check.png) | ![Reef check in chat: stressed, magma or lava within 2 blocks](site/media/check-stressed.png) |
+| ![Reef check in chat: thriving, warm reef water, light, fish nearby and room to spread](site/media/check.png) | ![Reef check in chat: stressed, magma or lava within 2 blocks](site/media/check-stressed.png) |
 
 | From fragments to a reef |
 |---|
@@ -41,9 +41,9 @@ client.
 |---|
 | ![Before and after: a bleached patch, then colour coming back](site/media/bleach-recover.png) |
 
-| Natural reef | Restored reef | At night |
+| Natural reef | Restored reef | After dark |
 |---|---|---|
-| ![A natural warm ocean reef under water](site/media/gallery-reef.png) | ![The restored reef up close](site/media/gallery-restored.png) | ![The restored reef at night, lit by sea pickles](site/media/gallery-night.png) |
+| ![A natural warm ocean reef under water](site/media/gallery-reef.png) | ![The restored reef up close](site/media/gallery-restored.png) | ![The restored reef after dark, lit by sea pickles](site/media/gallery-night.png) |
 
 Every screenshot here is a real capture from the game client, produced by
 [`LivingReefsCaptures`](src/gametest/java/io/github/razekteixeira/livingreefs/gametest/client/LivingReefsCaptures.java)
@@ -58,7 +58,7 @@ and then a coral reads its surroundings and acts:
 
 | Health | When | What happens |
 |---|---|---|
-| **Thriving** | in reef water (warm, lukewarm or deep lukewarm ocean) or near an active conduit, with light of at least 1 | tries to spread (4 % per random tick, times the boosts) or to revive dead coral of its kind next to it (4 %) |
+| **Thriving** | in reef water (warm ocean) or near an active conduit, with light of at least 1 | tries to spread (4 % per random tick, times the boosts) or to revive dead coral of its kind next to it (4 %) |
 | **Dormant** | anywhere else, too dark, or sheltered by a conduit | nothing: coral in your aquarium stays as it is |
 | **Stressed** | magma or lava within 2 blocks, or frozen water | bleaches into its dead twin (25 % per random tick) |
 
@@ -66,10 +66,15 @@ At the default `random_tick_speed` of 3 a block gets a random tick about every 6
 thriving coral tries to spread about once every half hour, and only within simulation distance of
 a player. `/tick freeze` stops it.
 
-**It never overgrows.** New coral only fills water source blocks on reef substrate (sand, gravel,
-stone, clay, coral), never replaces a block, keeps two blocks of water above it, stops where 14
-coral are already within two blocks, and stacks coral blocks at most three high. Dry dead coral
-(decoration on land, as some worldgen mods place it) is never revived.
+**How far it spreads.** Coral only spreads in warm ocean, the biome where vanilla grows reefs, or
+near an active conduit. New coral only fills water source blocks on reef substrate (sand, gravel,
+stone, clay, coral), never replaces a block or grows into a swimmer, keeps two blocks of water above
+it, never goes where 14 coral are already within two blocks, and stacks coral blocks at most three
+high. So a reef gets no denser than a natural one, but over many hours near players it does keep
+creeping slowly across warm ocean floor. Coral in lukewarm, cold or any other water stays as it is.
+Growth is a per-world game rule (`/gamerule livingreefs:coral_growth false`); it does not check
+land-claim mods. Dry dead coral (decoration on land, as some worldgen mods place it) is never
+revived.
 
 **Nothing is stored on the side.** Every change is a vanilla coral block, so there is no extra save
 data, and removing the mod leaves your reefs as they are.
@@ -80,7 +85,7 @@ data, and removing the mod leaves your reefs as they are.
 
 | Command | Permission | What it does |
 |---|---|---|
-| `/reef check [pos]` | use | Health of the coral you look at, every condition behind it, and when it will next spread or bleach |
+| `/reef check [pos]` | use | Health of the coral you look at (or at `pos`, within 16 blocks unless admin), every condition behind it, how many open spots it can spread to, and when it will next spread or bleach |
 | `/reef stats` | use | Coral random ticks, growth, recovery and bleaching since start, and the handler's own time |
 | `/reef reload` | admin | Re-read `config/livingreefs.json` |
 
@@ -124,7 +129,7 @@ and left untouched; the previous settings stay active.
 
 | Tag | Default |
 |---|---|
-| `livingreefs:reef_waters` (biomes) | warm, lukewarm and deep lukewarm ocean |
+| `livingreefs:reef_waters` (biomes) | warm ocean |
 | `livingreefs:frozen_waters` (biomes) | frozen ocean, deep frozen ocean, frozen river, `#c:is_aquatic_icy` |
 | `livingreefs:reef_substrate` (blocks) | sand, red sand, gravel, clay, dirt, stone family, sandstone, every coral block |
 | `livingreefs:reef_heat_sources` (blocks) | magma block, lava |

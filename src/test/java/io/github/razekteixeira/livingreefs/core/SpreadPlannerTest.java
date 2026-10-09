@@ -215,4 +215,20 @@ class SpreadPlannerTest {
 			assertTrue(SpreadPlanner.recover(view, TABLE, TUBE_BLOCK, new ScriptedDice(1, 2, 1)).isEmpty(), cell.toString());
 		}
 	}
+
+	@Test
+	void openSpotsCountWhatGrowthCouldUse() {
+		FakeView view = new FakeView(TUBE_BLOCK);
+		// Radius 2: 24 spots on the sand around the source, plus the one on top of the source block.
+		assertEquals(25, SpreadPlanner.openSpots(view, TABLE, TUBE_BLOCK, S));
+		view.set(1, 0, 0, GLASS);
+		view.set(-2, 2, -2, GLASS);
+		// One spot filled, one without two blocks of water above it.
+		assertEquals(23, SpreadPlanner.openSpots(view, TABLE, TUBE_BLOCK, S));
+		Settings crowded = new Settings(S.growthChance(), S.recoveryChance(), S.bleachChance(), S.spreadRadius(), S.minWaterAbove(),
+				1, S.maxReefHeight(), S.minLight(), S.boosts(), S.particles(), S.permissionLevels());
+		// The source itself is one coral near every spot, so a cap of 1 leaves no room anywhere.
+		assertEquals(0, SpreadPlanner.openSpots(view, TABLE, TUBE_BLOCK, crowded));
+		assertEquals(0, SpreadPlanner.openSpots(view, TABLE, "minecraft:dead_tube_coral_block", S));
+	}
 }

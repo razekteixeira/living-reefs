@@ -13,18 +13,19 @@ so they are entered by hand once; files are uploaded by the release workflow aft
 | Slug | `living-reefs` (URL: curseforge.com/minecraft/mc-mods/living-reefs; free on 2026-10-08) |
 | Summary | contents of [`summary.txt`](summary.txt) (under 120 characters) |
 | Description | switch the editor to **Markdown**, paste [`curseforge-description.md`](curseforge-description.md) |
-| Main category | World Gen |
-| Additional categories | Server Utility, Utility & QoL, Biomes |
+| Main category | Server Utility |
+| Additional categories | Utility & QoL, World Gen |
 | License | Apache License 2.0 |
 | Source URL | https://github.com/razekteixeira/living-reefs |
 | Issues URL | https://github.com/razekteixeira/living-reefs/issues |
 | Wiki / website | https://razekteixeira.github.io/living-reefs/ |
 | Logo | [`icon-512.png`](icon-512.png) (square PNG, at least 400×400; not WebP) |
 
-Why these categories: Living Reefs changes how a natural world feature behaves over time, which is
-where players browse for world and nature mods (World Gen). It is server-side only and has
-per-world switches, so server owners find it under Server Utility; `/reef check` is a
-quality-of-life tool (Utility & QoL). It works on ocean biomes and their coral (Biomes). It adds no
+Why these categories: it is installed on the server only, works with unmodified clients and has
+per-world switches, which is what server owners browse for (Server Utility). `/reef check` is a
+quality-of-life tool (Utility & QoL). It generates nothing itself, but it changes how the reefs
+that world generation placed behave afterwards, which is where players look for ocean and nature
+mods (World Gen, kept as an additional category only). Not Biomes: it adds no biome. It adds no
 items, mobs or blocks, so not Mobs, Armor or Technology.
 
 ## 2. Settings
@@ -45,12 +46,12 @@ description text (`./gradlew runClientGameTest`, then `branding/make_media.sh` a
 | `site/media/banner.png` | Living Reefs | Coral reefs that grow, bleach and recover on their own. |
 | `site/media/before-after.png` | From fragments to a reef | Five coral fragments planted on bare sand, and the reef they grew into. |
 | `site/media/timelapse.gif` | Time-lapse | A restoration site filling in, sped up with random_tick_speed. |
-| `site/media/check.png` | /reef check | Why a coral thrives: warm water, light, fish and sea pickles nearby. |
+| `site/media/check.png` | /reef check | Why a coral thrives: warm water, light, fish nearby, and room to spread. |
 | `site/media/bleach-recover.png` | Bleaching and recovery | A magma vent bleaches the reef; once it closes, living coral takes the dead coral back. |
 | `site/media/check-stressed.png` | Stressed coral | /reef check next to the vent: magma within two blocks. |
 | `site/media/gallery-reef.png` | A natural reef | A warm ocean reef as it generated, now alive. |
 | `site/media/gallery-restored.png` | A restored reef | The grown restoration site up close. |
-| `site/media/gallery-night.png` | Night reef | Sea pickles light the reef after dark, and light lets deep coral grow. |
+| `site/media/gallery-night.png` | After dark | The restored reef after dark, lit by sea pickles. Sea pickles also bring light to deep or roofed reefs. |
 
 ## 4. Releases
 

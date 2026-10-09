@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # Measures what Living Reefs costs on the dev server: a 64 x 64 warm-ocean reef of 8,192 coral (a
 # floor of coral blocks with a fan on every block, 512 coral per chunk section, so dense that nothing
-# can grow and every check runs to the end). For random_tick_speed 3 (vanilla default) and 300 (a
+# can grow). Every assessed coral reads its full surroundings (heat, pickles, light, biome, fish,
+# conduits), but a growth attempt there stops at its first cell, so the cost of placing blocks and of
+# block-entity-heavy chunks is not in this number. For random_tick_speed 3 (vanilla default) and 300 (a
 # stress value), it waits 40 s and then takes 15 readings, 1.1 s apart, of the handler's own time in
 # the last full second from /reef stats. Prints n/min/median/max in ms per second of game time.
 # pause-when-empty-seconds=0 keeps the empty server ticking (it pauses after 60 s by default).

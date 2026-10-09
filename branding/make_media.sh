@@ -2,9 +2,8 @@
 # Regenerates site/media from a real client run.
 # Usage: caffeinate -dimsu ./gradlew runClientGameTest && branding/make_media.sh && python3 -P branding/make_banners.py
 # (caffeinate keeps macOS from sleeping the display, which stalls the client window)
-# Needs ffmpeg and ImageMagick. The chat panel text in site/index.html and the samples in
-# branding/curseforge-description.md must be copied from the same run's log ("[System] [CHAT]" lines
-# after "reef check").
+# Needs ffmpeg and ImageMagick. Ends with branding/sync_chat.py, which copies the same run's
+# /reef check output into site/index.html and branding/curseforge-description.md.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 shots=build/run/clientGameTest/screenshots
@@ -47,8 +46,12 @@ label "$media/recovered.png" "Later: recovering" "$frames/recovering.png"
 magick "$frames/bleached.png" "$frames/recovering.png" +append "$media/bleach-recover.png"
 
 for f in "$media"/*.png; do
+	# The banners come from make_banners.py afterwards and are only used as PNG.
+	case "$(basename "$f")" in banner.png | social.png | readme-header.png) continue ;; esac
 	magick "$f" -strip -define png:compression-level=9 "$f"
 	magick "$f" -quality 82 "${f%.png}.webp"
 	magick "$f" -resize 640x -quality 80 "${f%.png}-640.webp"
 done
 echo "media updated: $(find "$media" -name '*.png' | wc -l | tr -d ' ') images, time-lapse of $((i - 6)) frames"
+
+python3 -P branding/sync_chat.py

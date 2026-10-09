@@ -22,13 +22,4 @@ public enum Facing {
 	public int dz() {
 		return dz;
 	}
-
-	public Facing opposite() {
-		return switch (this) {
-			case NORTH -> SOUTH;
-			case SOUTH -> NORTH;
-			case WEST -> EAST;
-			case EAST -> WEST;
-		};
-	}
 }

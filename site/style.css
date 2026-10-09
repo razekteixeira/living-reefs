@@ -176,6 +176,8 @@ section h2 { font-size: 32px; line-height: 1.2; }
 .capture-grid { margin-top: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px 24px; }
 .cap { margin: 0; }
 .cap-wide { grid-column: 1 / -1; }
+/* Side-by-side pairs keep both panels whole. */
+.cap-pair .shot img { aspect-ratio: 32 / 9; }
 .cap figcaption { margin-top: 12px; color: var(--muted); font-size: 15px; }
 .cap figcaption code { margin-right: 8px; }
 
