@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/razekteixeira/living-reefs/actions/workflows/build.yml"><img alt="Build" src="https://github.com/razekteixeira/living-reefs/actions/workflows/build.yml/badge.svg"></a>
+  <a href="https://www.curseforge.com/minecraft/mc-mods/living-reefs"><img alt="CurseForge downloads" src="https://img.shields.io/curseforge/dt/1734790?logo=curseforge&label=CurseForge"></a>
   <img alt="Minecraft 26.3" src="https://img.shields.io/badge/Minecraft-26.3-6aa84f">
   <img alt="Fabric" src="https://img.shields.io/badge/loader-Fabric-dbd0b4">
   <img alt="Server-side" src="https://img.shields.io/badge/server--side-vanilla%20clients%20welcome-2a8fa0">

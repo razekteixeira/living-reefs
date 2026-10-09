@@ -6,7 +6,7 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
-## [1.0.0-beta.1] - 2026-10-08
+## [1.0.0-beta.1] - 2026-10-09
 
 First public release, for Minecraft 26.3 on Fabric.
 
@@ -31,3 +31,6 @@ First public release, for Minecraft 26.3 on Fabric.
   `livingreefs:reef_substrate`, `reef_heat_sources`, `reef_waters` and `frozen_waters`.
 - Permission nodes through fabric-permissions-api (bundled), with vanilla level fallback.
 - Server-side: vanilla clients can join.
+
+[Unreleased]: https://github.com/razekteixeira/living-reefs/compare/v1.0.0-beta.1...HEAD
+[1.0.0-beta.1]: https://github.com/razekteixeira/living-reefs/releases/tag/v1.0.0-beta.1
