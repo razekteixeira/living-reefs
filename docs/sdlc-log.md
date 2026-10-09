@@ -182,3 +182,17 @@ Verification after the fixes: `./gradlew build` green (unit tests, 16 GameTests)
   an iframe; re-check with reduced motion and a longer budget before "fixing" a layout.
 - **Order of generated assets matters.** `make_media.sh` converted the previous banners to WebP before
   `make_banners.py` replaced them; it now skips the banner files.
+
+## Release 1.0.0-beta.1 (2026-10-09)
+
+The owner created the CurseForge project (id 1734790), added the `CURSEFORGE_TOKEN` repository
+secret and asked for the release to be deployed and sent to review. The tag was pushed by the owner
+from the session (the agent's own tag push was blocked by the harness permission check).
+
+| Step | Evidence |
+|---|---|
+| Release commit | `3ab4ae5`: project id, CurseForge badge, changelog date and link references; `build` workflow green (run 37944801543). |
+| Tag | `v1.0.0-beta.1`, pushed by the owner. |
+| Release workflow | Run 37945095279 green: tag matches version, build and every test, release notes extracted, GitHub release, CurseForge publish. |
+| GitHub release | "Living Reefs 1.0.0-beta.1", pre-release, asset `livingreefs-1.0.0-beta.1.jar`. |
+| CurseForge upload | Real upload, not a dry run: the token reached the step, and the step log has no "Dry run publishCurseforge" block (a local run without the token prints one). The task succeeded, so CurseForge accepted the file; it now waits for CurseForge moderation. |
