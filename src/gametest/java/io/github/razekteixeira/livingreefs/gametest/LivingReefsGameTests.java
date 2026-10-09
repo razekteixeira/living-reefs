@@ -335,7 +335,7 @@ public class LivingReefsGameTests {
 		LivingReefsConfig.set(new Settings(0, 0, 1, 2, 2, 14, 3, 0, Settings.Boosts.DEFAULTS, false, LEVELS));
 		level.getGameRules().set(ReefGameRules.CORAL_BLEACHING, false, level.getServer());
 		helper.startSequence()
-				// At speed 1024 a block gets about 5 random ticks a second, so 100 ticks is about 40 chances.
+				// At speed 1024 a block gets a random tick about every 4 game ticks: about 25 chances in 100 ticks.
 				.thenIdle(100)
 				.thenExecute(() -> {
 					helper.assertBlockPresent(Blocks.TUBE_CORAL_BLOCK, coral);

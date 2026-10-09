@@ -78,7 +78,7 @@ MUTANTS = [
      "runGameTest", "bleachingRuleSwitchesBleachingOff"),
     ("G12", MAIN + "ReefConditions.java", "light = Math.max(light, brightness(level, pos.relative(direction)));",
      "light = Math.max(light, brightness(level, pos));", "runGameTest", "darkCoralWaitsForLight"),
-    ("G13", MAIN + "ReefTicker.java", "if (revive && ReefConditions.heatNear(level, target)) {", "if (false) {", "runGameTest",
+    ("G13", MAIN + "ReefTicker.java", "if (revive && ReefConditions.heatNear(level, target) && !ReefConditions.conduitNear(level, target)) {", "if (false) {", "runGameTest",
      "noRecoveryNextToHeat"),
     ("G14", MAIN + "LivingReefsCommands.java",
      "if (!canAdmin(source) && !Vec3.atCenterOf(pos).closerThan(source.getPosition(), CHECK_RANGE)) {", "if (false) {",

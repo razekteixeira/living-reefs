@@ -182,12 +182,13 @@ public final class LivingReefsCommands {
 		String text;
 		if (!wet) {
 			text = "Out of water: it dies like any vanilla coral";
+		} else if (assessment.health() == Health.THRIVING && !rules.get(ReefGameRules.CORAL_GROWTH)) {
+			text = "Growth is off (gamerule livingreefs:coral_growth)";
 		} else if (assessment.health() == Health.THRIVING && open == 0) {
 			text = "Waits for room to spread";
 		} else if (assessment.health() == Health.THRIVING) {
 			double seconds = expectedSeconds(speed, assessment.growthChance());
-			text = !rules.get(ReefGameRules.CORAL_GROWTH) ? "Growth is off (gamerule livingreefs:coral_growth)"
-					: seconds < 0 ? "Never spreads with the current random_tick_speed and growthChance"
+			text = seconds < 0 ? "Never spreads with the current random_tick_speed and growthChance"
 					: "Tries to spread about every " + duration(seconds) + " while players are near";
 		} else if (assessment.health() == Health.STRESSED) {
 			double seconds = expectedSeconds(speed, settings.bleachChance());

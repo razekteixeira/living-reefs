@@ -130,3 +130,55 @@ session. Both reviewers were fresh-context subagents (I2 Distinct run) and edite
 | F17, F18 dead `Facing.opposite`, light Javadoc | LOW | Removed and fixed. |
 | F19 CurseForge categories | LOW | Main Server Utility; World Gen only as an additional category with an honest reason; Biomes dropped. |
 | F20 RCON client | LOW | Detects a failed login and reads exact lengths. |
+
+### G6 re-check (2026-10-09)
+
+A second fresh-context reviewer checked every resolution against the fix commit:
+`docs/review-g6-recheck.md`, verdict **fixes verified with notes**. All 7 MEDIUM (S1, F1 to F6) and
+15 LOW resolutions verified; no S1 bypass found (level 0 cannot use `/execute`, command blocks and
+operators are range-checked at their own position, the console is admin). Six new LOW findings, all
+fixed in the following commit:
+
+| Finding | Resolution |
+|---|---|
+| N1 heat-side revival skipped even under a conduit | Skipped only when no active conduit shelters the target; mutant G13 updated and still killed by `noRecoveryNextToHeat`. |
+| N2 "stays as it is" without the conduit caveat | README, site and CurseForge text now mention the conduit. |
+| N3 recovery caption overstated the shots | Caption says living coral takes back its own kind and a kind with no living coral nearby stays bleached, as the shot shows. |
+| N4 `__pycache__` committed | Removed and ignored. |
+| N5 "Waits for room" hid "Growth is off" | The game rule line comes first; mutant G8 still killed. |
+| N6 stale spec text and a test comment | Fixed. |
+
+Verification after the fixes: `./gradlew build` green (unit tests, 16 GameTests), `tools/mutation.py G13 G8` killed by the named tests.
+
+## WI-3 Media and site, WI-4 Release preparation
+
+| Gate | Status | Evidence |
+|---|---|---|
+| G3 Build green (CI) | passed | GitHub Actions `build` on `main` green (run 37871911602, 1 min 29 s, unit tests and GameTests on a fresh runner). |
+| Visual check | done | New capture run (56 shots) looked at by the orchestrator and by both G6 reviewers: chat readable, hand and hotbar hidden, water clear, time-lapse grows, bleaching and recovery visible, night shot at default brightness. Chat text in the site and the CurseForge description is synced from the same run by `branding/sync_chat.py`. |
+| Pages live | passed | `pages` workflow green (run 37871911626); `index.html` and all 22 assets it references return 200; the 9 image URLs in the README and CurseForge text return 200. Layout checked at 1440 px and in a 390 px iframe (headless Chrome stalls CSS animations inside an iframe, so the chat panel was checked with reduced motion). |
+| G7 Release prepared | passed (no tag) | `CHANGELOG.md` section 1.0.0-beta.1, `version=1.0.0-beta.1`, release workflow checks the tag against the version and extracts notes; `./gradlew publishCurseforge` without a token is a dry run (`build/publishMods/publishCurseforge.json`: project id 0, slug `dry-run`, nothing sent). No tag pushed and nothing uploaded, by owner rule. Owner actions: create the CurseForge project and fill `curseforge_project_id`, add `CURSEFORGE_TOKEN`, upload the GitHub social preview (`site/media/social.png`), turn on private vulnerability reporting (G5 S7), and the manual vanilla-client join test (AC14, CONTRIBUTING step 2). |
+
+## G8 Learning captured
+
+- **A lost session must be easy to find again.** All work lived on a worktree branch that the main
+  checkout did not show, and the two review reports were still pending when the session ended. Keep
+  the gate log current before waiting on anything, and keep reviewer prompts reproducible, so a new
+  session can restart a review from the log alone.
+- **`./gradlew build` wipes `build/run`, captures included.** The first G6 reviewer found the
+  screenshot folder empty because a later build had run the GameTests. Copy captures into
+  `site/media` straight after the client run and point reviewers there.
+- **Text next to a screenshot must come from the same run, by script.** Hand-copied chat text had
+  drifted from the code and the shots (G6 F1). `sync_chat.py` now rewrites the marked blocks.
+- **Capture what a player would see.** The check shots were taken with the time-lapse's sped-up
+  settings, so they promised "every 76 s" (G6 F2); the night shot used full brightness and looked like
+  day (F16). Reset to defaults before any shot whose text or look is a claim.
+- **A cap on density is not a cap on extent.** Every new coral is a new source; "never overgrows" was
+  false until the extent question was asked (F6) and decided by the owner (warm ocean only).
+- **Mutation harness discipline.** Count a kill only when the named test fails (F15), and keep each
+  mutant's target text unique: a refactor that shared a check between two methods made M11 invalid,
+  which the harness caught as INVALID rather than as a silent pass.
+- **Headless iframe checks can lie.** Chrome's virtual time stalls CSS animations and lazy images in
+  an iframe; re-check with reduced motion and a longer budget before "fixing" a layout.
+- **Order of generated assets matters.** `make_media.sh` converted the previous banners to WebP before
+  `make_banners.py` replaced them; it now skips the banner files.

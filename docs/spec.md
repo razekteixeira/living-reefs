@@ -56,7 +56,7 @@ compatibility. Vanilla death (scheduled tick when dry) is untouched.
 2. Draw one random number. If it is above the largest chance any action could have, return. Only
    then read the world.
 3. Read the conditions around the coral into a `Conditions` value: in water, water kind (reef,
-   neutral, frozen; from biome tags), light (`max(sky, block)`), heat source within 2 blocks,
+   neutral, frozen; from biome tags), light (`max(sky, block)` at the coral and its six neighbours, since a coral block is opaque), heat source within 2 blocks,
    active conduit within 16 blocks, sea pickles within 2 blocks, tropical fish within 6 blocks.
 4. `ReefRules` (pure) turns conditions into a `Health`:
    - `STRESSED` when a heat source is near or the water is frozen, unless a conduit protects it;
@@ -93,7 +93,7 @@ prefix). Built from the block registry when the server starts.
 | Config | `config/livingreefs.json` | rates, radii, caps, boosts, particles, permission levels |
 
 **Commands.** `/livingreefs` with alias `/reef`: `check [pos]` (use: health of the coral looked at
-or at `pos`, with each condition and the expected time to the next growth), `stats` (use: counts
+or at `pos`, which must be within 16 blocks without admin rights, with each condition and the expected time to the next growth), `stats` (use: counts
 since start and the handler's own time), `reload` (admin). Permission nodes `livingreefs.use` and
 `livingreefs.admin`; without a permissions mod the configured vanilla levels apply (0 and 3).
 

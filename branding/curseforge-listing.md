@@ -47,7 +47,7 @@ description text (`./gradlew runClientGameTest`, then `branding/make_media.sh` a
 | `site/media/before-after.png` | From fragments to a reef | Five coral fragments planted on bare sand, and the reef they grew into. |
 | `site/media/timelapse.gif` | Time-lapse | A restoration site filling in, sped up with random_tick_speed. |
 | `site/media/check.png` | /reef check | Why a coral thrives: warm water, light, fish nearby, and room to spread. |
-| `site/media/bleach-recover.png` | Bleaching and recovery | A magma vent bleaches the reef; once it closes, living coral takes the dead coral back. |
+| `site/media/bleach-recover.png` | Bleaching and recovery | A magma vent bleaches the reef; once it closes, living coral takes back dead coral of its own kind. A kind with no living coral left nearby stays bleached. |
 | `site/media/check-stressed.png` | Stressed coral | /reef check next to the vent: magma within two blocks. |
 | `site/media/gallery-reef.png` | A natural reef | A warm ocean reef as it generated, now alive. |
 | `site/media/gallery-restored.png` | A restored reef | The grown restoration site up close. |

@@ -88,7 +88,8 @@ public final class ReefTicker {
 
 	/**
 	 * Places a planned coral, or revives one, keeping the properties of what it replaces where they
-	 * apply. A revived coral next to a heat source would only bleach again, so it is left dead.
+	 * apply. A revived coral next to a heat source would only bleach again, so it is left dead, unless
+	 * an active conduit shelters it.
 	 */
 	private static boolean place(ServerLevel level, BlockPos source, Optional<Placement> planned, Settings settings,
 			boolean revive) {
@@ -110,7 +111,7 @@ public final class ReefTicker {
 		if (!state.canSurvive(level, target)) {
 			return false;
 		}
-		if (revive && ReefConditions.heatNear(level, target)) {
+		if (revive && ReefConditions.heatNear(level, target) && !ReefConditions.conduitNear(level, target)) {
 			return false;
 		}
 		// A coral block is solid: never grow one into a swimming player or mob.

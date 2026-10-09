@@ -59,7 +59,7 @@ and then a coral reads its surroundings and acts:
 | Health | When | What happens |
 |---|---|---|
 | **Thriving** | in reef water (warm ocean) or near an active conduit, with light of at least 1 | tries to spread (4 % per random tick, times the boosts) or to revive dead coral of its kind next to it (4 %) |
-| **Dormant** | anywhere else, too dark, or sheltered by a conduit | nothing: coral in your aquarium stays as it is |
+| **Dormant** | anywhere else, too dark, or sheltered by a conduit | nothing: coral in your aquarium stays as it is (unless an active conduit is near) |
 | **Stressed** | magma or lava within 2 blocks, or frozen water | bleaches into its dead twin (25 % per random tick) |
 
 At the default `random_tick_speed` of 3 a block gets a random tick about every 68 seconds, so a
@@ -71,7 +71,7 @@ near an active conduit. New coral only fills water source blocks on reef substra
 stone, clay, coral), never replaces a block or grows into a swimmer, keeps two blocks of water above
 it, never goes where 14 coral are already within two blocks, and stacks coral blocks at most three
 high. So a reef gets no denser than a natural one, but over many hours near players it does keep
-creeping slowly across warm ocean floor. Coral in lukewarm, cold or any other water stays as it is.
+creeping slowly across warm ocean floor. Coral in lukewarm, cold or any other water stays as it is, unless an active conduit is near.
 Growth is a per-world game rule (`/gamerule livingreefs:coral_growth false`); it does not check
 land-claim mods. Dry dead coral (decoration on land, as some worldgen mods place it) is never
 revived.

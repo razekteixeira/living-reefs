@@ -18,7 +18,7 @@ Server-side only. Players join with a vanilla client.
 - **What a reef likes:** warm ocean water, light (sea pickles light deep reefs), tropical fish and sea pickles nearby (growth x1.5 each), and an active **conduit** (x2), which also makes any water a reef and shelters coral from bleaching.
 - **`/reef check`** tells you whether a coral is thriving, dormant or stressed, and why.
 - **Never too dense:** new coral only fills still water on sand, gravel, stone, clay or coral in warm oceans, never replaces a block, keeps two blocks of water above it, and never goes where 14 coral are already within two blocks. Over many hours near players a reef does creep slowly across warm ocean floor; one game rule turns growth off.
-- **Safe for your builds:** coral outside warm oceans just stays as it is, dry dead coral (decoration) is never touched, and nothing is saved on the side: every change is a vanilla coral block.
+- **Safe for your builds:** coral outside warm oceans just stays as it is (unless you build an active conduit near it), dry dead coral (decoration) is never touched, and nothing is saved on the side: every change is a vanilla coral block.
 - **Light on the server:** runs on vanilla random ticks, so only near players, at `random_tick_speed`, and never loads chunks. A warm ocean reef of 8,192 coral costs about 0.1 ms per tick at default speed.
 
 ## What it looks like

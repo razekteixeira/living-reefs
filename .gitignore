@@ -47,3 +47,6 @@ logs/
 
 # agent worktrees
 .claude/
+
+# python
+__pycache__/
