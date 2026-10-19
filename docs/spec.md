@@ -135,7 +135,8 @@ Each criterion has a discriminating test: it fails if the behaviour is removed o
 
 **Scope boundary (files the build may touch):** `src/**`, `build.gradle`, `gradle.properties`,
 `settings.gradle`, `tools/**`, `branding/**`, `site/**`, `docs/**`, `.github/**`, root
-documentation files. Nothing outside this repository except reading `../throughput` and the vault.
+documentation files. Nothing outside this repository except reading the Throughput source repo
+(`../../throughput/throughput-source-code`) and the central Agentic SDLC vault.
 
 | WorkItem | Content | Gates |
 |---|---|---|
