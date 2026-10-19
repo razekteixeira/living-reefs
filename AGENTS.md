@@ -133,6 +133,9 @@ Product facts: `README.md`; requirements and acceptance criteria:
 - Do not create other repositories. Do not change anything outside this
   repository except reading the Throughput source repo, the central Agentic SDLC
   method and this project's local vault.
+- Publish only on CurseForge (owner's choice on 2026-10-08, for its larger
+  community), through mod-publish-plugin in `release.yml`. Do not add Modrinth
+  or another platform unless the owner asks.
 - Do not change the commit identity configured in this repository.
 - Never publish the owner's personal or work email address. No secrets, tokens,
   absolute local paths or private notes in tracked files: this repository is
