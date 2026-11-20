@@ -1,88 +1,35 @@
 # Source Code Agent Guide
 
-This repository contains the source code for Living Reefs. The sibling vault
-repository owns the project authority map and durable agent-facing synthesis.
-The binding project, toolchain, quality and conduct rules are in the
-"Living Reefs" sections at the end of this file; they apply to every agent
-(Claude Code, Codex, Cursor, others).
-
-The vault is local only (no remote). Cloud sessions and worktrees outside
-`personal/living-reefs/` will not find it: everything needed for code work is
-in this file, `CONTRIBUTING.md` and `docs/`.
+This repository contains the source code for Living Reefs. The binding project,
+toolchain, quality and conduct rules are in the "Living Reefs" sections at the
+end of this file; they apply to every agent (Claude Code, Codex, Cursor,
+others). Everything needed for code work is in this file, `CONTRIBUTING.md` and
+`docs/`.
 
 ## First Read
 
 1. Read this file.
-2. Read `../living-reefs-vault/Welcome.md`.
-3. Read `../living-reefs-vault/Vault Map.md`.
-4. Read `../living-reefs-vault/00 - Meta/Agent Guide.md`.
-5. Read `../living-reefs-vault/00 - Meta/Source Authority.md` and
-   `../living-reefs-vault/00 - Meta/Agentic Project Profile.json`.
-6. Read only the notes relevant to the task.
+2. If `.vault/` exists, it holds the owner's personal working notes (Margin):
+   follow `.vault/AGENTS.md`. It is local and never committed; never name or
+   copy its content into the repository, commits, PRs or code comments.
+3. Read only the docs relevant to the task.
 
 ## Source Hierarchy
 
 1. User request in the current conversation.
 2. Source-code repository rules in this file.
-3. The authority map and governed vault notes under `../living-reefs-vault/`.
+3. `docs/spec.md`, `docs/sdlc-log.md` and `CONTRIBUTING.md`.
 4. The owner's global agent instructions, when the runtime loads them.
-
-## SDLC method (central)
-
-This project adopts the central Agentic SDLC method. Source of truth for the
-method (profiles, phases, G0 Intake ready to G8 Learning captured gates,
-operational patterns):
-`../../../agentic-suite-agnostic/` (start with `00 - Map/Vault map.md`).
-Adapt, do not copy: the central method governs the form; this project governs
-the local instantiation (stack, commands, thresholds).
-
-- adopted agentic_sdlc_version: 2026-10-20
-- Deltas since then: `../../../agentic-suite-agnostic/CHANGELOG.md` (focus on the
-  "Downstream impact" section).
-- Without the sibling checkout, the method is at
-  `https://github.com/brunofgsaraiva/agentic-suite-agnostic`.
-- Local adaptation (when it exists): see local instantiation note,
-  `../living-reefs-vault/05 - Operations/SDLC Local Instantiation.md` (gates
-  mapping, thresholds, repeatability decisions). The gate commands needed for
-  code work are repeated in "Quality bar and gates" below.
-- Knowledge sync mode: authoritative-vault.
-- Knowledge navigation scale: small.
-- Adoption contract: `../../../agentic-suite-agnostic/ADOPTION.md`.
-- Agent entry rule: for delivery or coding work, use the `agentic-sdlc` gateway
-  before acting. If the runtime does not load skills automatically, read
-  `../../../agentic-suite-agnostic/skills/agentic-sdlc/SKILL.md` and follow it.
-
-<!-- agentic-project:runtime-profile:start -->
-## Agentic Project runtime defaults
-
-- Selected by default when available: `rtk-ai-cli`. Compress noisy development command output before it enters agent context.
-- These are project runtime preferences, not Agentic SDLC dependencies or gate
-  criteria. The user can opt out of a default for a task.
-- Explicit operator modes such as `modo-compacto` remain opt-in only.
-- Optional scaffold files for project type `product-tooling`: none, by declaration. Reason: Product tooling is reproduced by its own engineers from the repository's test path, so the reader-facing report adds a second, weaker surface.
-
-<!-- agentic-project:runtime-profile:end -->
 
 ## Rules
 
 - When reporting information to me, be extremely concise and sacrifice grammar for the sake of concision
 - Use EN-GB for project knowledge unless the user asks otherwise.
-- Follow the sibling vault's `00 - Meta/Source Authority.md` for persistent
-  knowledge, external facts, approvals and work state.
-- Preserve relative links between the source-code and vault repositories.
-- Keep raw source material, working notes and derived outputs separate.
-- Use `../living-reefs-vault/02 - Sources/raw/` as the unprocessed source inbox;
-  move ingested source files to `../living-reefs-vault/02 - Sources/raw/processed/`
-  and attachments to `../living-reefs-vault/02 - Sources/raw/assets/`.
 - Classify documentation code by role, not extension. This repository owns
   generators, themes and documentation applications that require a build,
-  dependencies, tests or deployment. Hand-authored HTML, CSS or JavaScript that
-  is itself human-readable documentation may belong in the sibling vault.
-- Do not edit generated documentation outputs directly. Record
-  `generated_from`, `build_command` and `output_path` in the vault operations
-  note.
-- If the sibling vault is unavailable, do not invent or silently replace its
-  decisions. Record the missing dependency and continue only with bounded code work.
+  dependencies, tests or deployment.
+- Do not edit generated documentation outputs directly; change their source and
+  rebuild.
 - Repeatability rule: when a task, or a stable part of it, is reasonably
   expected to run more than once, the work is not complete until it leaves the
   smallest suitable deterministic path under version control. Reuse an existing
@@ -121,7 +68,7 @@ Product facts: `README.md`; requirements and acceptance criteria:
 
 ### Reference implementation
 
-- Throughput (`../../throughput/throughput-source-code/`,
+- Throughput (`../throughput/`,
   github.com/razekteixeira/throughput) was built the same way and is the
   reference implementation: reuse its structure, tooling, scripts and quality
   bar. Read it only; never modify it from this project.
@@ -131,15 +78,16 @@ Product facts: `README.md`; requirements and acceptance criteria:
 - Never push a release tag or upload to CurseForge: both are the owner's
   actions (the owner pushes the tag; the release workflow then uploads).
 - Do not create other repositories. Do not change anything outside this
-  repository except reading the Throughput source repo, the central Agentic SDLC
-  method and this project's local vault.
+  repository except reading the Throughput repo and this project's local notes
+  (`.vault/`).
 - Publish only on CurseForge (owner's choice on 2026-10-08, for its larger
   community), through mod-publish-plugin in `release.yml`. Do not add Modrinth
   or another platform unless the owner asks.
 - Do not change the commit identity configured in this repository.
 - Never publish the owner's personal or work email address. No secrets, tokens,
   absolute local paths or private notes in tracked files: this repository is
-  public. Machine and account specifics live only in the local vault.
+  public. Machine and account specifics live only in untracked local files
+  (`CLAUDE.local.md`, `.vault/`).
 - The mod is server-side only: no new blocks, items, packets or synced
   registries, so vanilla clients keep working (see "Rules for changes" in
   `CONTRIBUTING.md`, which binds agents too).
@@ -154,7 +102,7 @@ Product facts: `README.md`; requirements and acceptance criteria:
   `~/.gradle/caches/fabric-loom/minecraftMaven/net/minecraft/minecraft-common-deobf/26.3/*.jar`
   (client classes: `minecraft-clientonly-deobf`).
 - GitHub CLI and Git authentication specifics for the owner's machine are in
-  the vault (`01 - Context/Session Brief.md`); follow them, never print tokens.
+  the untracked `CLAUDE.local.md`; follow them, never print tokens.
 - Blender: headless `Blender -b -P script.py -- args` (5.2 LTS, Cycles), as in
   `branding/render_logo3d.py`.
 - Headless Chrome (`--headless=new --virtual-time-budget=5000 --screenshot=...`)
@@ -174,8 +122,7 @@ Product facts: `README.md`; requirements and acceptance criteria:
 
 ### Quality bar and gates
 
-Commands and evidence for the SDLC gates (full mapping in the vault's SDLC
-Local Instantiation note):
+Commands and evidence for the delivery gates:
 
 - G3 Build green: `./gradlew build` (compile, JUnit tests for `core` and
   config, server GameTests on a headless 26.3 server). Same command as the
